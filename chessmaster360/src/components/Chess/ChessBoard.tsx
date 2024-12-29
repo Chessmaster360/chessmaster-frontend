@@ -1,4 +1,6 @@
 import React from "react";
+import EvaluationBar from "./EvaluationBar";
+import PlayerInfo from "./PlayerInfo";
 
 // Define the initial position of the pieces
 const initialBoard: Record<string, string> = {
@@ -37,38 +39,56 @@ const squareImages = {
   dark: "/assets/board_pieces/square_brown_dark.png",
 };
 
+// Main ChessBoard Component
 const ChessBoard: React.FC = () => {
-  return (
-    <div className="grid grid-cols-8 gap-0 w-[480px] h-[480px]">
-      {rows.map((row) =>
-        cols.map((col) => {
-          const square = `${col}${row}`;
-          const isDark = (row + cols.indexOf(col)) % 2 !== 0; // Alternate square colors
-          const piece = initialBoard[square];
-          const squareImage = isDark ? squareImages.dark : squareImages.light;
+  const blackPlayer = { name: "Hikaru Nakamura", elo: 2804 };
+  const whitePlayer = { name: "Magnus Carlsen", elo: 2834 };
 
-          return (
-            <div
-              key={square}
-              className="relative w-full h-full"
-              style={{
-                backgroundImage: `url(${squareImage})`,
-                backgroundSize: "cover",
-              }}
-            >
-              {piece && (
-                <img
-                  src={pieceImages[piece]}
-                  alt={piece}
-                  className="absolute inset-0 w-[90%] h-[90%] object-contain m-auto"
-                />
-              )}
-            </div>
-          );
-        })
-      )}
+  return (
+    <div className="flex items-center justify-center space-x-4 mt-16">
+      {/* Evaluation Bar */}
+      <EvaluationBar />
+
+      {/* Chessboard with Player Info */}
+      <div className="relative w-[480px]">
+        {/* Player Info Components */}
+        <PlayerInfo name={blackPlayer.name} elo={blackPlayer.elo} position="top" />
+        <PlayerInfo name={whitePlayer.name} elo={whitePlayer.elo} position="bottom" />
+
+        {/* Chessboard */}
+        <div className="grid grid-cols-8 gap-0 w-[480px] h-[480px] border-2 border-gray-600 relative">
+          {rows.map((row) =>
+            cols.map((col) => {
+              const square = `${col}${row}`;
+              const isDark = (row + cols.indexOf(col)) % 2 !== 0; // Alternate square colors
+              const piece = initialBoard[square];
+              const squareImage = isDark ? squareImages.dark : squareImages.light;
+
+              return (
+                <div
+                  key={square}
+                  className="relative w-full h-full"
+                  style={{
+                    backgroundImage: `url(${squareImage})`,
+                    backgroundSize: "cover",
+                  }}
+                >
+                  {piece && (
+                    <img
+                      src={pieceImages[piece]}
+                      alt={piece}
+                      className="absolute inset-0 w-[90%] h-[90%] object-contain m-auto"
+                    />
+                  )}
+                </div>
+              );
+            })
+          )}
+        </div>
+      </div>
     </div>
   );
 };
+
 
 export default ChessBoard;

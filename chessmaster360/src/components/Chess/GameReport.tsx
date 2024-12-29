@@ -2,7 +2,7 @@ import React from "react";
 
 const GameReport: React.FC = () => {
   return (
-    <div className="bg-gray-800 text-white p-6 rounded-md space-y-6 shadow-md">
+    <div className="bg-gray-800 text-white p-6 rounded space-y-6 shadow-md">
       <h2 className="text-xl font-semibold">Game Report</h2>
       <div>
         <label className="block mb-2 text-sm">Enter PGN:</label>
