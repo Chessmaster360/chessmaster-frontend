@@ -5,18 +5,18 @@ const Navbar: React.FC = () => {
     <nav className="navbar bg-gray-950 text-white p-4 shadow-lg">
       <div className="container mx-auto flex justify-between items-center">
         <h1 className="text-2xl font-bold text-black"> ChessMaster360 ♟️</h1>
-        <ul className="flex space-x-6">
+        <ul className="flex space-x-12">
           <li>
-            <button className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded transition">Play</button>
+            <button className="text-white hover:text-gray-300 transition-colors">Analyze Games</button>
           </li>
           <li>
-            <button className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded transition">Analyze Games</button>
+            <button className="text-white hover:text-gray-300 transition-colors">Play</button>
           </li>
           <li>
-            <button className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded transition">Learn</button>
+            <button className="text-white hover:text-gray-300 transition-colors">Learn</button>
           </li>
           <li>
-            <button className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded transition">Login</button>
+            <button className="text-white hover:text-gray-300 transition-colors">Login</button>
           </li>
         </ul>
       </div>

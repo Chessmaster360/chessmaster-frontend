@@ -7,6 +7,7 @@ export default {
   			'bleu-gray-100': 'var(--Bleu-gray-100, #F1F5F9)',
   			customYellow: '#FBBF24',
   			customBlue: '#3B82F6',
+			'tahiti': '#3ab7bf',
   			black: {
   				'100': '#010103',
   				'200': '#0E0E10',
