@@ -1,5 +1,7 @@
+// src/components/GameReport.tsx
 import React, { useState } from "react";
 import { FaChessKnight, FaTools, FaSearch, FaArrowRight } from "react-icons/fa";
+import { fetchGamesFromBackend, analyzeGameInput } from "../../api/services/gameReportService";
 
 const GameReport: React.FC = () => {
   const [option, setOption] = useState<string>("pgn");
@@ -7,46 +9,43 @@ const GameReport: React.FC = () => {
   const [depth, setDepth] = useState<number>(14);
   const [games, setGames] = useState<string[]>([]);
   const [showGames, setShowGames] = useState<boolean>(false);
-  const [warning, setWarning] = useState<string>(""); // State for warning message
+  const [warning, setWarning] = useState<string>("");
 
   const handleOptionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setOption(event.target.value);
-    setInputValue(""); // Reset the input value when option changes
-    setWarning(""); // Clear warning when changing options
+    setInputValue("");
+    setWarning("");
   };
 
   const handleDepthChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDepth(Number(event.target.value));
   };
 
-  const handleAnalyze = () => {
+  const handleAnalyze = async () => {
     if (!inputValue.trim()) {
       setWarning("Please enter a game to analyze.");
     } else {
       setWarning("");
-      // Add analyze functionality here
-      console.log("Analyzing:", inputValue);
+      await analyzeGameInput(inputValue, option);
     }
   };
 
-  const fetchGames = () => {
-    // Simulate fetching last month's games for chess.com or lichess.org
-    const mockGames = Array.from({ length: 50 }, (_, i) => `Game ${i + 1}: PlayerA vs PlayerB`);
-    setGames(mockGames);
-    setShowGames(true); // Show the fetched games
+  const fetchGames = async () => {
+    const fetchedGames = await fetchGamesFromBackend();
+    setGames(fetchedGames);
+    setShowGames(true);
   };
 
   return (
     <div className="bg-gray-800 text-white p-4 rounded shadow-md border border-gray-700">
-      {/* Header with Chess Icon and Title */}
+      {/* Header */}
       <div className="flex items-center mb-4">
         <FaChessKnight className="text-3xl text-green-600 mr-3" />
         <h2 className="text-xl font-semibold">Game Report</h2>
       </div>
 
-      {/* Input Row with Field, Dropdown, and Search Button */}
+      {/* Input Row */}
       <div className="flex items-center space-x-4 mb-6">
-        {/* Input Field with Search Button */}
         <div className="relative flex-grow">
           <input
             type="text"
@@ -69,18 +68,15 @@ const GameReport: React.FC = () => {
           )}
         </div>
 
-        {/* Dropdown */}
-        <div>
-          <select
-            value={option}
-            onChange={handleOptionChange}
-            className="bg-gray-900 text-white px-3 py-2 rounded w-[120px] text-center"
-          >
-            <option value="pgn">PGN</option>
-            <option value="chess.com">Chess.com</option>
-            <option value="lichess.org">Lichess.org</option>
-          </select>
-        </div>
+        <select
+          value={option}
+          onChange={handleOptionChange}
+          className="bg-gray-900 text-white px-3 py-2 rounded w-[120px] text-center"
+        >
+          <option value="pgn">PGN</option>
+          <option value="chess.com">Chess.com</option>
+          <option value="lichess.org">Lichess.org</option>
+        </select>
       </div>
 
       {/* Analyze Button */}
@@ -92,33 +88,29 @@ const GameReport: React.FC = () => {
           <FaArrowRight />
           <span>Analyze</span>
         </button>
-        {warning && (
-          <p className="mt-2 text-sm text-red-500">{warning}</p>
-        )}
+        {warning && <p className="mt-2 text-sm text-red-500">{warning}</p>}
       </div>
 
       {/* Depth Selector */}
-      <div className="space-y-4">
+      <div className="space-y-4 bg-gray-700 p-4 rounded-lg">
         <div className="flex items-center space-x-2">
           <h3 className="font-medium">Depth</h3>
-          <FaTools className="text-xl text-green-600" />
+          <FaTools className="text-xl text-green-500" />
         </div>
         <div className="flex items-center space-x-4">
-          {/* Depth Bar */}
           <input
             type="range"
             min={14}
             max={20}
             value={depth}
             onChange={handleDepthChange}
-            className="w-full accent-green-600 h-3 rounded-lg"
+            className="w-full h-3 rounded-lg bg-gray-600 cursor-pointer"
           />
-          {/* Depth Value */}
-          <span className="text-sm bg-gray-700 px-3 py-1 rounded">{depth}</span>
+          <span className="text-sm bg-gray-600 px-3 py-1 rounded">{depth}</span>
         </div>
       </div>
 
-      {/* Display Fetched Games */}
+      {/* Display Games */}
       {showGames && (
         <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-75 flex items-center justify-center z-50">
           <div className="bg-gray-900 text-white p-6 rounded-lg w-3/4 h-3/4 overflow-y-auto relative">
