@@ -1,13 +1,13 @@
 // src/components/GameReport.tsx
 import React, { useState } from "react";
 import { FaChessKnight, FaTools, FaSearch, FaArrowRight } from "react-icons/fa";
-import { fetchGamesFromBackend, analyzeGameInput } from "../../api/services/gameReportService";
+import { Game, fetchGamesFromBackend, analyzeGameInput } from "../../api/gameApi";
 
 const GameReport: React.FC = () => {
   const [option, setOption] = useState<string>("pgn");
   const [inputValue, setInputValue] = useState<string>("");
   const [depth, setDepth] = useState<number>(14);
-  const [games, setGames] = useState<string[]>([]);
+  const [games, setGames] = useState<Game[]>([]);
   const [showGames, setShowGames] = useState<boolean>(false);
   const [warning, setWarning] = useState<string>("");
 
@@ -30,10 +30,26 @@ const GameReport: React.FC = () => {
     }
   };
 
-  const fetchGames = async () => {
-    const fetchedGames = await fetchGamesFromBackend();
-    setGames(fetchedGames);
-    setShowGames(true);
+  const handleSearch = async () => {
+    if (option === "chess.com" || option === "lichess.org") {
+      try {
+        const fetchedGames = await fetchGamesFromBackend(option, inputValue.trim());
+        setGames(fetchedGames);
+        setWarning("");
+        setShowGames(true);
+      } catch {
+        setWarning("Usuario no encontrado.");
+        setGames([]);
+        setShowGames(false);
+      }
+    } else {
+      setWarning("Por favor selecciona una plataforma válida.");
+    }
+  };
+
+  const handleGameSelect = (pgn: string) => {
+    setInputValue(pgn);
+    setShowGames(false);
   };
 
   return (
@@ -60,7 +76,7 @@ const GameReport: React.FC = () => {
           />
           {option !== "pgn" && (
             <button
-              onClick={fetchGames}
+              onClick={handleSearch}
               className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 flex items-center"
             >
               <FaSearch />
@@ -117,8 +133,8 @@ const GameReport: React.FC = () => {
             <h3 className="text-lg font-semibold mb-4">Last Month's Games:</h3>
             <ul className="space-y-2">
               {games.map((game, index) => (
-                <li key={index} className="border-b border-gray-700 pb-2">
-                  {game}
+                <li key={index} className="border-b border-gray-700 pb-2" onClick={() => handleGameSelect(game.pgn)}>
+                  {game.white.username} vs {game.black.username}
                 </li>
               ))}
             </ul>
