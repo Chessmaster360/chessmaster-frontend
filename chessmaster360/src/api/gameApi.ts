@@ -19,7 +19,7 @@ export interface Game {
 
 // Axios instance
 const apiClient = axios.create({
-  baseURL: "http://your-backend-api.com", // Replace with your backend URL
+  baseURL: "http://localhost:8181", // Replace with your backend URL
   headers: {
     "Content-Type": "application/json",
   },
@@ -31,10 +31,11 @@ export const fetchGamesFromBackend = async (
   username: string
 ): Promise<Game[]> => {
   try {
-    const response = await apiClient.get("/games", {
+    // Ajusta la ruta a /api/games (o como lo tengas en tu controlador)
+    const response = await apiClient.get("/api/games", {
       params: { platform, username },
     });
-    return response.data.games; // Expecting { games: [...] } structure
+    return response.data.games; 
   } catch (error) {
     console.error("Error fetching games:", error);
     throw new Error("Failed to fetch games.");
@@ -47,7 +48,8 @@ export const analyzeGameInput = async (
   platform: string
 ): Promise<any> => {
   try {
-    const response = await apiClient.post("/analyze", {
+    // Ajusta la ruta a /api/analyze
+    const response = await apiClient.post("/api/analyze", {
       pgn,
       platform,
     });
