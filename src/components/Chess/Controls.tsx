@@ -8,31 +8,41 @@ const Controls: React.FC = () => {
         className="bg-gray-700 text-white p-3 rounded-full hover:bg-gray-600 transition-all"
         aria-label="Step Backward"
       >
-        <FaStepBackward className="text-xl" />
+        <span className="text-xl">
+          <FaStepBackward />
+        </span>
       </button>
       <button
         className="bg-gray-700 text-white p-3 rounded-full hover:bg-gray-600 transition-all"
         aria-label="Arrow Left"
       >
-        <FaArrowLeft className="text-xl" />
+        <span className="text-xl">
+          <FaArrowLeft />
+        </span>
       </button>
       <button
         className="bg-gray-700 text-white p-3 rounded-full hover:bg-gray-600 transition-all"
         aria-label="Arrow Right"
       >
-        <FaArrowRight className="text-xl" />
+        <span className="text-xl">
+          <FaArrowRight />
+        </span>
       </button>
       <button
         className="bg-gray-700 text-white p-3 rounded-full hover:bg-gray-600 transition-all"
         aria-label="Step Forward"
       >
-        <FaStepForward className="text-xl" />
+        <span className="text-xl">
+          <FaStepForward />
+        </span>
       </button>
       <button
         className="bg-gray-700 text-white p-3 rounded-full hover:bg-gray-600 transition-all"
         aria-label="Redo"
       >
-        <FaRedo className="text-xl" />
+        <span className="text-xl">
+          <FaRedo />
+        </span>
       </button>
     </div>
   );
