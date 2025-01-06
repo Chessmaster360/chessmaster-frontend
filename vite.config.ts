@@ -7,4 +7,5 @@ export default defineConfig({
   build: {
     outDir: 'dist', // Default output folder
   },
+  base: './', // Configura rutas relativas
 })
