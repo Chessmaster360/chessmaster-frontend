@@ -5,19 +5,20 @@ import Controls from "../components/Chess/Controls";
 
 const AnalyzeScreen: React.FC = () => {
   return (
-    <div className="flex flex-col lg:flex-row items-start justify-center lg:space-x-6 p-4">
+    <div className="flex flex-col lg:flex-row lg:flex-nowrap items-center lg:items-start justify-center gap-8 p-6 max-w-screen-lg mx-auto bg-slate-900">
       {/* Chess Board */}
-      <div className="flex-1 max-w-lg mx-auto lg:mx-0">
+      <div className="flex-1 w-full max-w-sm sm:max-w-md lg:max-w-lg lg:mr-6">
         <ChessBoard />
       </div>
 
-      {/* Game Report */}
-      <div className="flex flex-col flex-1 max-w-md space-y-4">
+      {/* Game Report + Controls */}
+      <div className="flex flex-col flex-1 w-full max-w-md space-y-6">
         <GameReport />
         <Controls />
       </div>
     </div>
   );
 };
+
 
 export default AnalyzeScreen;

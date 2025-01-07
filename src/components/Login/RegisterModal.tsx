@@ -1,11 +1,11 @@
-
-import { FC } from 'react';
+import { FC } from "react";
 
 interface RegisterModalProps {
   onClose: () => void;
+  onSwitchToLogin: () => void; // Nueva prop para cambiar al modal de login
 }
 
-const RegisterModal: FC<RegisterModalProps> = ({ onClose }) => {
+const RegisterModal: FC<RegisterModalProps> = ({ onClose, onSwitchToLogin }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       {/* Overlay para cerrar */}
@@ -56,7 +56,7 @@ const RegisterModal: FC<RegisterModalProps> = ({ onClose }) => {
               className="text-purple-400 hover:underline"
               onClick={(e) => {
                 e.preventDefault();
-                alert("Redirecting to login...");
+                onSwitchToLogin(); // Llama a la función para cambiar al modal de login
               }}>
               Login
             </a>

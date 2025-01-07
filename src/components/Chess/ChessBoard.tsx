@@ -45,18 +45,18 @@ const ChessBoard: React.FC = () => {
   const whitePlayer = { name: "Magnus Carlsen", elo: 2834 };
 
   return (
-    <div className="flex items-center justify-center space-x-4 mt-16">
+    <div className="flex items-start gap-4 mt-16 mb-16">
       {/* Evaluation Bar */}
       <EvaluationBar />
 
       {/* Chessboard with Player Info */}
-      <div className="relative w-[480px]">
+      <div className="relative w-full max-w-[480px]">
         {/* Player Info Components */}
         <PlayerInfo name={blackPlayer.name} elo={blackPlayer.elo} position="top" />
         <PlayerInfo name={whitePlayer.name} elo={whitePlayer.elo} position="bottom" />
 
         {/* Chessboard */}
-        <div className="grid grid-cols-8 gap-0 w-[480px] h-[480px] border-spacing-10 border-gray-600 relative">
+        <div className="grid grid-cols-8 aspect-square w-full sm:w-[480px] sm:h-[480px] border border-gray-600 relative">
           {rows.map((row) =>
             cols.map((col) => {
               const square = `${col}${row}`;
@@ -89,6 +89,5 @@ const ChessBoard: React.FC = () => {
     </div>
   );
 };
-
 
 export default ChessBoard;

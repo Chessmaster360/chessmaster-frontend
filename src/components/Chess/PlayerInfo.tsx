@@ -16,4 +16,3 @@ const PlayerInfo: React.FC<{ name: string; elo: number; position: "top" | "botto
   
 
   export default PlayerInfo;
-  

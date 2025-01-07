@@ -22,12 +22,12 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-slate-900 bg-gradient-to-r text-gray-200">
+    <div className="h-screen flex flex-col bg-gradient-to-r from-slate-900 to-gray-900 text-gray-200">
       {/* Navbar */}
       <Navbar onLoginClick={toggleLoginModal} />
 
       {/* Main content */}
-      <main className="h-screen flex flex-col">
+      <main className="flex-grow">
         <AnalyzeScreen />
       </main>
 
@@ -39,7 +39,10 @@ const App: React.FC = () => {
         />
       )}
       {showRegister && (
-        <RegisterModal onClose={() => setShowRegister(false)} />
+        <RegisterModal
+          onClose={() => setShowRegister(false)}
+          onSwitchToLogin={toggleLoginModal} // Pasa la función para cambiar al modal de login
+        />
       )}
     </div>
   );
