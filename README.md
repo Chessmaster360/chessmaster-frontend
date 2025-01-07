@@ -1,50 +1,107 @@
-# React + TypeScript + Vite
+# Proyecto: ChessMaster 🎯♟️  
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**ChessMaster** es una aplicación web desarrollada con **React** y **TypeScript**, diseñada para ofrecer una interfaz moderna y responsiva para jugar y analizar partidas de ajedrez. Utilizamos **TailwindCSS** para los estilos y un enfoque modular basado en **React Components**.
 
-Currently, two official plugins are available:
+🚀 **¡Ya puedes probar la aplicación en producción!**  
+👉 [ChessMaster360 en Producción](https://chessmaster360.netlify.app)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## 🎯 **¿Qué puedes hacer con ChessMaster?**  
+- Jugar partidas en un **tablero de ajedrez interactivo**.  
+- Analizar movimientos con soporte para archivos **PGN** (Portable Game Notation).  
+- Personalizar configuraciones de juego y recibir reportes detallados de las partidas.  
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+El diseño está optimizado para **dispositivos móviles** y **escritorios**, asegurando una experiencia responsiva en cualquier plataforma.
 
-- Configure the top-level `parserOptions` property like this:
+---
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## Requisitos Previos ✅  
+
+Antes de comenzar con el desarrollo local, asegúrate de contar con lo siguiente:  
+- **Node.js** (v16 o superior).  
+  👉 [Descargar Node.js](https://nodejs.org/)  
+- **npm** o **yarn** (v7 o superior).  
+  - **npm** viene preinstalado con Node.js, pero también puedes instalar **yarn**.
+- **Git** para clonar el repositorio.  
+  👉 [Descargar Git](https://git-scm.com/)
+
+---
+
+## 🔧 **Configuración del Proyecto**
+
+Sigue estos pasos para clonar el repositorio e iniciar el entorno de desarrollo:
+
+### 1️⃣ Clonar el Repositorio  
+Abre una terminal y ejecuta el siguiente comando:  
+```bash
+git clone https://github.com/usuario/chessmaster.git
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+### 2️⃣ Navegar al Directorio del Proyecto  
+Accede al directorio clonado:  
+```bash
+cd chessmaster
 ```
+
+### 3️⃣ Instalar Dependencias  
+Instala las dependencias necesarias utilizando **npm** o **yarn**:  
+```bash
+npm install
+```
+
+### 4️⃣ Configurar TailwindCSS  
+El proyecto ya incluye un archivo de configuración de **TailwindCSS** (`tailwind.config.js`) y de **PostCSS** (`postcss.config.js`). No necesitas realizar configuraciones adicionales, pero puedes personalizarlos si es necesario.
+
+---
+
+## 🚀 **Ejecución del Proyecto**
+
+Una vez instaladas las dependencias, puedes iniciar el servidor de desarrollo local con:  
+```bash
+npm run dev
+```
+
+Esto iniciará la aplicación en modo de desarrollo. Abre tu navegador y accede a:  
+```
+http://localhost:5173
+```
+
+---
+
+## 📂 **Estructura del Proyecto**  
+
+```plaintext
+├── public/                 # Archivos públicos (imágenes, íconos, etc.)
+├── src/                    # Código fuente principal
+│   ├── components/         # Componentes reutilizables
+│   │   ├── Bars/           # Componentes de la barra de navegación
+│   │   ├── Chess/          # Componentes relacionados con el ajedrez
+│   ├── styles/             # Archivos de estilos globales
+│   ├── App.tsx             # Componente principal de la aplicación
+│   └── main.tsx            # Punto de entrada del proyecto
+├── tailwind.config.js      # Configuración de TailwindCSS
+├── postcss.config.js       # Configuración de PostCSS
+├── package.json            # Información del proyecto
+├── README.md               # Este archivo
+└── dist/                   # Archivos generados para producción
+```
+
+---
+
+## ✨ **Características Clave**
+- **Responsividad**: Funciona perfectamente en móviles y escritorios.  
+- **Tablero de ajedrez interactivo** (🚧 próximamente).  
+- **Carga y análisis de partidas**: Compatible con archivos PGN.  
+- **Estilos modernos**: Gracias a **TailwindCSS**.  
+
+---
+
+## 🌐 **Enlace de Producción**  
+Accede a la aplicación en producción desde el siguiente enlace:  
+👉 [ChessMaster360 en Producción](https://chessmaster360.netlify.app)
+
+---
+
+## 📜 **Licencia**  
+Este proyecto está bajo la licencia **MIT**. Puedes usarlo, modificarlo y distribuirlo libremente.
