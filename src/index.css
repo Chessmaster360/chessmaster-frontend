@@ -16,3 +16,9 @@ Tailwindcss
   color: #fff;
   font-size: 1.75rem;
 }
+
+body {
+  @apply h-screen flex flex-col bg-gradient-to-r from-slate-900 to-gray-900 text-gray-200;
+}
+
+

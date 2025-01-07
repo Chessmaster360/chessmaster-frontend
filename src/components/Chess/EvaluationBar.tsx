@@ -3,7 +3,7 @@ import React from "react";
 // Evaluation Bar Component
 const EvaluationBar: React.FC = () => {
   return (
-    <div className="relative w-4 h-64 sm:w-6 sm:h-[480px] lg:w-8 lg:h-[480px] bg-gray-700 mx-auto">
+    <div className="relative w-4 h-[318px] sm:w-6 sm:h-[480px] lg:w-8 lg:h-[480px] bg-gray-700 mx-auto">
       {/* Green Bar (White's favor) */}
       <div
         className="absolute w-full bg-green-500"
