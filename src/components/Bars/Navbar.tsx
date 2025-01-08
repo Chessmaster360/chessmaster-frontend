@@ -1,14 +1,14 @@
 import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
 interface NavbarProps {
   onLoginClick: () => void; // Prop para manejar el clic en el botón Login
 }
 
 const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
-  // Estado para el menú móvil
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate(); // Hook para navegación
 
-  // Función para alternar el menú
   const toggleMenu = () => {
     setIsMenuOpen((prev) => !prev);
   };
@@ -16,7 +16,6 @@ const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
   return (
     <nav className="bg-gray-950 text-white p-4 shadow-lg">
       <div className="container mx-auto flex justify-between items-center">
-        {/* Título */}
         <h1 className="text-2xl font-bold text-white flex items-center">
           ChessMaster360 <span className="ml-2 text-purple-500">♟️</span>
         </h1>
@@ -24,12 +23,18 @@ const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
         {/* Menú en pantallas grandes */}
         <ul className="hidden md:flex space-x-12">
           <li>
-            <button className="text-white hover:text-gray-300 transition-colors">
+            <button
+              className="text-white hover:text-gray-300 transition-colors"
+              onClick={() => navigate('/')}
+            >
               Analyze Games
             </button>
           </li>
           <li>
-            <button className="text-white hover:text-gray-300 transition-colors">
+            <button
+              className="text-white hover:text-gray-300 transition-colors"
+              onClick={() => navigate('/play')}
+            >
               Play
             </button>
           </li>
@@ -39,7 +44,6 @@ const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
             </button>
           </li>
           <li>
-            {/* Botón Login */}
             <button
               className="text-white hover:text-gray-300 transition-colors"
               onClick={onLoginClick}
@@ -49,7 +53,7 @@ const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
           </li>
         </ul>
 
-        {/* Hamburger button para móviles */}
+        {/* Botón para el menú móvil */}
         <button
           className="md:hidden text-white focus:outline-none"
           onClick={toggleMenu}
@@ -72,15 +76,17 @@ const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
         </button>
       </div>
 
-      {/* Menú colapsable para móviles (full-screen con fondo oscuro) */}
+      {/* Menú colapsable para móviles */}
       {isMenuOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-75 z-50 flex flex-col justify-center items-center">
-          {/* Opciones del menú */}
           <ul className="text-center space-y-8 text-lg font-semibold">
             <li>
               <button
                 className="text-white hover:text-gray-300 transition-colors"
-                onClick={toggleMenu}
+                onClick={() => {
+                  toggleMenu();
+                  navigate('/');
+                }}
               >
                 Analyze Games
               </button>
@@ -88,7 +94,10 @@ const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
             <li>
               <button
                 className="text-white hover:text-gray-300 transition-colors"
-                onClick={toggleMenu}
+                onClick={() => {
+                  toggleMenu();
+                  navigate('/play');
+                }}
               >
                 Play
               </button>
@@ -102,12 +111,11 @@ const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
               </button>
             </li>
             <li>
-              {/* Botón Login */}
               <button
                 className="text-white hover:text-gray-300 transition-colors"
                 onClick={() => {
-                  toggleMenu(); // Cierra el menú
-                  onLoginClick(); // Abre el modal de login
+                  toggleMenu();
+                  onLoginClick();
                 }}
               >
                 Login
@@ -115,7 +123,6 @@ const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
             </li>
           </ul>
 
-          {/* Botón para cerrar */}
           <button
             className="absolute top-4 right-4 text-gray-400 hover:text-white text-xl"
             onClick={toggleMenu}

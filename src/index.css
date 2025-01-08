@@ -18,7 +18,7 @@ Tailwindcss
 }
 
 body {
-  @apply h-screen flex flex-col bg-gradient-to-r from-slate-900 to-gray-900 text-gray-200;
+  @apply h-screen flex flex-col bg-gradient-to-r from-slate-900 to-gray-950 text-gray-200;
 }
 
 
