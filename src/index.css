@@ -2,23 +2,81 @@
 @tailwind components;
 @tailwind utilities;
 
-/** 
-Tailwindcss
-**/
+/** Tailwindcss **/
 
 .navbar {
   position: sticky;
   top: 0;
   z-index: 10;
+  background-color: #1A1A1A; /* Café oscuro para la barra de navegación */
+  border-bottom: 2px solid #a67c52; /* Borde inferior dorado suave */
 }
 
 .navbar h1 {
-  color: #fff;
+  color: #f8f1e4; /* Texto crema para contraste */
   font-size: 1.75rem;
+  font-family: 'Playfair Display', serif; /* Fuente retro elegante */
 }
 
 body {
-  @apply h-screen flex flex-col bg-gradient-to-r from-slate-900 to-gray-950 text-gray-200;
+  @apply h-screen flex flex-col bg-brown-900; /* Gradiente con tonos cafés */
 }
 
+body {
+  font-family: 'Courier New', monospace;
+}
 
+/* Retro card with a coffee-stained look */
+.retro-card {
+  background: #eae0d5; /* Color crema envejecido */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Sombra suave para realismo */
+  border-radius: 8px;
+  border: 2px solid #a67c52; /* Borde dorado suave */
+  padding: 1rem;
+  color: #3e2f2c; /* Texto café oscuro */
+}
+
+/* Estilo del tablero de ajedrez */
+.chess-board {
+  background: radial-gradient(circle, #4d342e, #3e2f2c); /* Gradiente que simula madera oscura */
+  border: 8px solid #3e2f2c; /* Borde más oscuro */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Estilo de los botones */
+.button {
+  transition: background-color 0.5s ease, transform 0.2s ease;
+  background-color: #4d342e; /* Café oscuro para los botones */
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-family: 'Courier New', monospace;
+  border-radius: 4px;
+  box-shadow: 0 4px #a67c52; /* Sombra dorada */
+}
+
+.button:hover {
+  background-color: #a67c52; /* Cambio a dorado suave */
+  transform: translateY(-2px);
+}
+
+/* Estilo para los títulos */
+h2, h3 {
+  font-family: 'Playfair Display', serif;
+  color: #a67c52; /* Dorado retro */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Textura de fondo para un efecto vintage */
+body:before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('https://www.transparenttextures.com/patterns/white-wall-3.png'); /* Textura de pared vieja */
+  opacity: 0.2;
+  pointer-events: none;
+  z-index: -1;
+}

@@ -12,7 +12,7 @@ const RegisterModal: FC<RegisterModalProps> = ({ onClose, onSwitchToLogin }) => 
       <div className="absolute inset-0" onClick={onClose}></div>
 
       {/* Modal */}
-      <div className="relative bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-lg w-full max-w-xs sm:max-w-md animate-fade-in">
+      <div className="relative bg-black-600 p-6 sm:p-8 rounded-2xl shadow-lg w-full max-w-xs sm:max-w-md animate-fade-in">
         <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-center text-white">
           Create Account 🚀
         </h2>
@@ -22,27 +22,27 @@ const RegisterModal: FC<RegisterModalProps> = ({ onClose, onSwitchToLogin }) => 
           <input
             type="text"
             placeholder="Username"
-            className="p-3 sm:p-4 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="p-3 sm:p-4 rounded bg-black-200 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
 
           {/* Email */}
           <input
             type="email"
             placeholder="Email Address"
-            className="p-3 sm:p-4 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="p-3 sm:p-4 rounded bg-black-200 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
 
           {/* Password */}
           <input
             type="password"
             placeholder="Password"
-            className="p-3 sm:p-4 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="p-3 sm:p-4 rounded bg-black-200 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
 
           {/* Register button */}
           <button
             type="submit"
-            className="bg-purple-500 hover:bg-purple-600 text-white py-2 sm:py-3 rounded-lg text-lg transition-all">
+            className="bg-purple-500 hover:bg-purple-600 text-white py-2 sm:py-3 rounded text-lg transition-all">
             Sign Up
           </button>
         </form>

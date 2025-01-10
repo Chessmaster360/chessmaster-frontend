@@ -12,7 +12,7 @@ const AnalyzeScreen: React.FC = () => {
       </div>
 
       {/* Game Report + Controls */}
-      <div className="flex flex-col flex-1 w-full max-w-md space-y-6">
+      <div className="flex flex-col flex-1 w-full max-w-md space-y-0">
         <GameReport />
         <Controls />
       </div>

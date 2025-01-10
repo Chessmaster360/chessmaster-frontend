@@ -14,7 +14,7 @@ const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
   };
 
   return (
-    <nav className="bg-gray-950 text-white p-4 shadow-lg">
+    <nav className="text-white p-4 shadow-lg bg-black-600">
       <div className="container mx-auto flex justify-between items-center">
         <h1 className="text-2xl font-bold text-white flex items-center">
           ChessMaster360 <span className="ml-2 text-purple-500">♟️</span>

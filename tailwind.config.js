@@ -31,7 +31,11 @@ export default {
   				'700': '#D6D9E9',
   				'800': '#E4E4E6',
   				DEFAULT: '#FFFFFF'
-  			}
+  			},
+			brown: {
+				800: '#4d342e',
+				900: '#3e2f2c',
+			},
   		},
   		spacing: {
   			'128': '32rem'

@@ -56,7 +56,7 @@ const GameReport: React.FC = () => {
   }, []);
 
   return (
-    <div className="bg-gray-800 text-white p-4 rounded shadow-md border border-gray-700 w-full max-w-[90vw] lg:max-w-[800px] mx-auto">
+    <div className="bg-black-600 text-white p-4 rounded shadow-md border border-black-600 w-full max-w-[90vw] lg:max-w-[800px] mx-auto mb-8">
       <header className="flex items-center mb-6 flex-col lg:flex-row lg:space-x-3 text-center lg:text-left">
         <FaChessKnight className="text-3xl text-green-600 mb-2 lg:mb-0" />
         <h2 className="text-2xl font-semibold">Game Report</h2>
@@ -73,7 +73,7 @@ const GameReport: React.FC = () => {
                 ? "Enter the username..."
                 : "Enter PGN..."
             }
-            className="w-full bg-gray-900 text-white px-4 py-2 rounded pr-12"
+            className="w-full bg-black-200 text-white px-4 py-2 rounded pr-12"
           />
           {option !== "pgn" && (
             <button
@@ -89,7 +89,7 @@ const GameReport: React.FC = () => {
         <select
           value={option}
           onChange={handleOptionChange}
-          className="bg-gray-900 text-white px-4 py-2 rounded w-full lg:w-[160px] text-center"
+          className="bg-black-200 text-white px-4 py-2 rounded w-full lg:w-[160px] text-center"
         >
           <option value="pgn">PGN</option>
           <option value="chess.com">Chess.com</option>
@@ -108,13 +108,13 @@ const GameReport: React.FC = () => {
         {warning && <p className="mt-2 text-sm text-red-500 text-center">{warning}</p>}
       </div>
 
-      <div className="space-y-4 bg-gray-700 p-4 rounded-lg">
+      <div className="space-y-4 bg-black-200 p-4 rounded">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center space-x-2">
             <h3 className="font-medium">Depth</h3>
             <FaTools className="text-xl text-green-500" />
           </div>
-          <span className="text-sm bg-gray-600 px-3 py-1 rounded lg:hidden">{depth}</span>
+          <span className="text-sm bg-black-100 px-3 py-1 rounded lg:hidden">{depth}</span>
         </div>
         <div className="flex items-center space-x-4">
           <input

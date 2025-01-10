@@ -44,15 +44,15 @@ const PlayScreen: React.FC = () => {
   return (
     <div className="h-screen flex text-gray-200">
       {/* Contenedor central */}
-      <div className="container mx-auto flex flex-col md:flex-row items-center justify-center bg-gray-900 rounded-lg shadow-lg p-4 md:gap-2 max-w-4xl">
+      <div className="container mx-auto flex flex-col md:flex-row items-center justify-center rounded-lg shadow-lg p-4 md:gap-2 max-w-4xl">
         {/* Tablero de Ajedrez */}
-        <div className="flex-1 flex justify-center items-center p-4">
+        <div className="flex-1 w-full max-w-sm sm:max-w-md lg:max-w-lg lg:mr-6">
           <ChessBoard />
         </div>
 
         {/* Botón para abrir/ocultar la barra en pantallas pequeñas */}
         <button
-          className="absolute top-4 right-4 z-50 bg-purple-500 text-white p-2 rounded-full md:hidden"
+          className="absolute top-20 right-4 z-50 bg-purple-500 text-white p-2 rounded-full md:hidden"
           onClick={toggleSidebar}
         >
           {isSidebarOpen ? 'Close' : 'Open'}
@@ -62,14 +62,14 @@ const PlayScreen: React.FC = () => {
         <div
           className={`fixed inset-y-0 right-0 transform ${
             isSidebarOpen ? 'translate-x-0' : 'translate-x-full'
-          } transition-transform duration-300 md:relative md:translate-x-0 w-80 bg-gray-800 p-6 rounded-lg shadow-lg flex flex-col`}
+          } transition-transform duration-300 md:relative md:translate-x-0 w-80 bg-black-600 p-6 rounded shadow-lg flex flex-col`}
         >
           <h2 className="text-2xl font-bold mb-4">Play Against Bots</h2>
           <ul className="space-y-4">
             {bots.map((bot) => (
               <li
                 key={bot.name}
-                className="p-4 bg-gray-600 rounded-lg cursor-pointer hover:bg-gray-500"
+                className="p-4 bg-black-200 rounded cursor-pointer hover:bg-gray-500"
                 onClick={() => setSelectedBot(bot)}
               >
                 {bot.name}
@@ -77,7 +77,7 @@ const PlayScreen: React.FC = () => {
             ))}
           </ul>
           {selectedBot && (
-            <div className="mt-6 p-4 bg-gray-600 rounded-lg">
+            <div className="mt-6 p-4 bg-black-200 rounded-lg">
               <img
                 src={selectedBot.image}
                 alt={selectedBot.name}

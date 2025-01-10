@@ -56,7 +56,7 @@ const ChessBoard: React.FC = () => {
         <PlayerInfo name={whitePlayer.name} elo={whitePlayer.elo} position="bottom" />
 
         {/* Chessboard */}
-        <div className="grid grid-cols-8 aspect-square w-full sm:w-[480px] sm:h-[480px] border border-gray-600 relative">
+        <div className="grid grid-cols-8 aspect-square w-full sm:w-[480px] sm:h-[480px] border border-black-200 relative">
           {rows.map((row) =>
             cols.map((col) => {
               const square = `${col}${row}`;
