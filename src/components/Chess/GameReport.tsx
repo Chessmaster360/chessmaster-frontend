@@ -1,14 +1,22 @@
 import React, { useState, useCallback } from "react";
 import { FaChessKnight, FaTools, FaSearch, FaArrowRight } from "react-icons/fa";
-import { Game, fetchGamesFromBackend, analyzeGameInput } from "../../api/gameApi";
+import { getPlayerArchives, getGamesFromMonth } from "../../services/chessService";
+
+interface Game {
+  white: { username: string };
+  black: { username: string };
+  pgn: string;
+}
 
 const GameReport: React.FC = () => {
   const [option, setOption] = useState<string>("pgn");
   const [inputValue, setInputValue] = useState<string>("");
   const [depth, setDepth] = useState<number>(14);
-  const [games, setGames] = useState<Game[]>([]);
   const [showGames, setShowGames] = useState<boolean>(false);
   const [warning, setWarning] = useState<string>("");
+  const [games, setGames] = useState<Game[]>([]);
+  const [archives, setArchives] = useState<string[]>([]);
+  const [currentArchiveIndex, setCurrentArchiveIndex] = useState<number>(0);
 
   const handleOptionChange = useCallback((event: React.ChangeEvent<HTMLSelectElement>) => {
     setOption(event.target.value);
@@ -20,40 +28,77 @@ const GameReport: React.FC = () => {
     setDepth(Number(event.target.value));
   }, []);
 
-  const handleAnalyze = useCallback(async () => {
+  const handleSearch = useCallback(async () => {
     if (!inputValue.trim()) {
-      setWarning("Please enter a game to analyze.");
+      setWarning("Please enter a username.");
       return;
     }
-    setWarning("");
+
+    if (option !== "chess.com") {
+      setWarning("This feature currently only works for Chess.com.");
+      return;
+    }
+
     try {
-      await analyzeGameInput(inputValue, option);
+      const playerArchives = await getPlayerArchives(inputValue.trim());
+      setArchives(playerArchives);
+
+      // Cargar juegos del archivo más reciente
+      if (playerArchives.length > 0) {
+        setCurrentArchiveIndex(playerArchives.length - 1);
+        const [year, month] = playerArchives[playerArchives.length - 1]
+          .split("/")
+          .slice(-2);
+        const gamesForMonth = await getGamesFromMonth(inputValue.trim(), parseInt(year), parseInt(month));
+        setGames(gamesForMonth);
+        setShowGames(true);
+      } else {
+        setWarning("No games found for this user.");
+        setShowGames(false);
+        setGames([]);
+      }
     } catch (error) {
-      setWarning("Error analyzing the game input. Please try again.");
+      setWarning("Error fetching games. Please try again.");
+      setArchives([]);
+      setGames([]);
+      setShowGames(false);
     }
   }, [inputValue, option]);
-
-  const handleSearch = useCallback(async () => {
-    if (option === "chess.com" || option === "lichess.org") {
-      try {
-        const fetchedGames = await fetchGamesFromBackend(option, inputValue.trim());
-        setGames(fetchedGames);
-        setShowGames(true);
-        setWarning("");
-      } catch (error) {
-        setWarning("User not found or there was an issue fetching the games.");
-        setGames([]);
-        setShowGames(false);
-      }
-    } else {
-      setWarning("Please select a valid platform.");
-    }
-  }, [option, inputValue]);
 
   const handleGameSelect = useCallback((pgn: string) => {
     setInputValue(pgn);
     setShowGames(false);
   }, []);
+
+  const handlePreviousMonth = useCallback(async () => {
+    if (currentArchiveIndex > 0) {
+      const newIndex = currentArchiveIndex - 1;
+      setCurrentArchiveIndex(newIndex);
+      const [year, month] = archives[newIndex].split("/").slice(-2);
+
+      try {
+        const gamesForMonth = await getGamesFromMonth(inputValue.trim(), parseInt(year), parseInt(month));
+        setGames(gamesForMonth);
+      } catch {
+        setWarning("Error fetching games for previous month.");
+      }
+    }
+  }, [currentArchiveIndex, archives, inputValue]);
+
+  const handleNextMonth = useCallback(async () => {
+    if (currentArchiveIndex < archives.length - 1) {
+      const newIndex = currentArchiveIndex + 1;
+      setCurrentArchiveIndex(newIndex);
+      const [year, month] = archives[newIndex].split("/").slice(-2);
+
+      try {
+        const gamesForMonth = await getGamesFromMonth(inputValue.trim(), parseInt(year), parseInt(month));
+        setGames(gamesForMonth);
+      } catch {
+        setWarning("Error fetching games for next month.");
+      }
+    }
+  }, [currentArchiveIndex, archives, inputValue]);
 
   return (
     <div className="bg-black-600 text-white p-4 rounded shadow-md border border-black-600 w-full max-w-[90vw] lg:max-w-[800px] mx-auto mb-8">
@@ -93,13 +138,11 @@ const GameReport: React.FC = () => {
         >
           <option value="pgn">PGN</option>
           <option value="chess.com">Chess.com</option>
-          <option value="lichess.org">Lichess.org</option>
         </select>
       </div>
 
       <div className="mb-6">
         <button
-          onClick={handleAnalyze}
           className="w-full bg-green-600 px-4 py-2 rounded hover:bg-green-700 flex items-center justify-center space-x-2"
         >
           <FaArrowRight aria-hidden="true" />
@@ -108,31 +151,10 @@ const GameReport: React.FC = () => {
         {warning && <p className="mt-2 text-sm text-red-500 text-center">{warning}</p>}
       </div>
 
-      <div className="space-y-4 bg-black-200 p-4 rounded">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-center space-x-2">
-            <h3 className="font-medium">Depth</h3>
-            <FaTools className="text-xl text-green-500" />
-          </div>
-          <span className="text-sm bg-black-100 px-3 py-1 rounded lg:hidden">{depth}</span>
-        </div>
-        <div className="flex items-center space-x-4">
-          <input
-            type="range"
-            min={14}
-            max={20}
-            value={depth}
-            onChange={handleDepthChange}
-            className="w-full h-3 rounded-lg bg-gray-600 cursor-pointer"
-          />
-          <span className="text-sm bg-gray-600 px-3 py-1 rounded hidden lg:block">{depth}</span>
-        </div>
-      </div>
-
       {showGames && (
         <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-75 flex items-center justify-center z-50">
           <div className="bg-gray-900 text-white p-6 rounded-lg w-11/12 max-w-[600px] h-3/4 overflow-y-auto relative">
-            <h3 className="text-lg font-semibold mb-4">Last Month's Games:</h3>
+            <h3 className="text-lg font-semibold mb-4">Games for {archives[currentArchiveIndex]}:</h3>
             <ul className="space-y-2">
               {games.map((game, index) => (
                 <li
@@ -144,6 +166,28 @@ const GameReport: React.FC = () => {
                 </li>
               ))}
             </ul>
+            <div className="flex justify-between mt-4">
+              <button
+                onClick={handlePreviousMonth}
+                disabled={currentArchiveIndex === 0}
+                className={`px-4 py-2 rounded ${
+                  currentArchiveIndex === 0 ? "bg-gray-600" : "bg-blue-600 hover:bg-blue-700"
+                } text-white`}
+              >
+                Previous
+              </button>
+              <button
+                onClick={handleNextMonth}
+                disabled={currentArchiveIndex === archives.length - 1}
+                className={`px-4 py-2 rounded ${
+                  currentArchiveIndex === archives.length - 1
+                    ? "bg-gray-600"
+                    : "bg-blue-600 hover:bg-blue-700"
+                } text-white`}
+              >
+                Next
+              </button>
+            </div>
             <button
               onClick={() => setShowGames(false)}
               className="absolute top-4 right-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
