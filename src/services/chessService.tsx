@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Base URL del backend
-const BASE_URL = 'http://localhost:3000/chess'; // Asegúrate de que esta URL sea correcta según tu configuración
+const BASE_URL = 'http://localhost:3000/api/chess'; // Asegúrate de que esta URL sea correcta según tu configuración
 
 /**
  * Obtiene los archivos de juegos del usuario.

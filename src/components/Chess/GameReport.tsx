@@ -1,10 +1,11 @@
 import React, { useState, useCallback } from "react";
 import { FaChessKnight, FaTools, FaSearch, FaArrowRight } from "react-icons/fa";
 import { getPlayerArchives, getGamesFromMonth } from "../../services/chessService";
+import GameModal from "./GameModal"; // Asegúrate de importar correctamente el modal
 
 interface Game {
-  white: { username: string };
-  black: { username: string };
+  white: { username: string; elo: number };
+  black: { username: string; elo: number };
   pgn: string;
 }
 
@@ -17,7 +18,9 @@ const GameReport: React.FC = () => {
   const [games, setGames] = useState<Game[]>([]);
   const [archives, setArchives] = useState<string[]>([]);
   const [currentArchiveIndex, setCurrentArchiveIndex] = useState<number>(0);
+  const [currentMonth, setCurrentMonth] = useState<string>("");
 
+  // Manejo de cambios en las opciones
   const handleOptionChange = useCallback((event: React.ChangeEvent<HTMLSelectElement>) => {
     setOption(event.target.value);
     setInputValue("");
@@ -43,12 +46,10 @@ const GameReport: React.FC = () => {
       const playerArchives = await getPlayerArchives(inputValue.trim());
       setArchives(playerArchives);
 
-      // Cargar juegos del archivo más reciente
       if (playerArchives.length > 0) {
         setCurrentArchiveIndex(playerArchives.length - 1);
-        const [year, month] = playerArchives[playerArchives.length - 1]
-          .split("/")
-          .slice(-2);
+        const [year, month] = playerArchives[playerArchives.length - 1].split("/").slice(-2);
+        setCurrentMonth(`${year}-${month}`);
         const gamesForMonth = await getGamesFromMonth(inputValue.trim(), parseInt(year), parseInt(month));
         setGames(gamesForMonth);
         setShowGames(true);
@@ -75,6 +76,7 @@ const GameReport: React.FC = () => {
       const newIndex = currentArchiveIndex - 1;
       setCurrentArchiveIndex(newIndex);
       const [year, month] = archives[newIndex].split("/").slice(-2);
+      setCurrentMonth(`${year}-${month}`);
 
       try {
         const gamesForMonth = await getGamesFromMonth(inputValue.trim(), parseInt(year), parseInt(month));
@@ -90,6 +92,7 @@ const GameReport: React.FC = () => {
       const newIndex = currentArchiveIndex + 1;
       setCurrentArchiveIndex(newIndex);
       const [year, month] = archives[newIndex].split("/").slice(-2);
+      setCurrentMonth(`${year}-${month}`);
 
       try {
         const gamesForMonth = await getGamesFromMonth(inputValue.trim(), parseInt(year), parseInt(month));
@@ -151,51 +154,39 @@ const GameReport: React.FC = () => {
         {warning && <p className="mt-2 text-sm text-red-500 text-center">{warning}</p>}
       </div>
 
-      {showGames && (
-        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-75 flex items-center justify-center z-50">
-          <div className="bg-gray-900 text-white p-6 rounded-lg w-11/12 max-w-[600px] h-3/4 overflow-y-auto relative">
-            <h3 className="text-lg font-semibold mb-4">Games for {archives[currentArchiveIndex]}:</h3>
-            <ul className="space-y-2">
-              {games.map((game, index) => (
-                <li
-                  key={index}
-                  className="border-b border-gray-700 pb-2 cursor-pointer hover:bg-gray-700 p-2"
-                  onClick={() => handleGameSelect(game.pgn)}
-                >
-                  {game.white.username} vs {game.black.username}
-                </li>
-              ))}
-            </ul>
-            <div className="flex justify-between mt-4">
-              <button
-                onClick={handlePreviousMonth}
-                disabled={currentArchiveIndex === 0}
-                className={`px-4 py-2 rounded ${
-                  currentArchiveIndex === 0 ? "bg-gray-600" : "bg-blue-600 hover:bg-blue-700"
-                } text-white`}
-              >
-                Previous
-              </button>
-              <button
-                onClick={handleNextMonth}
-                disabled={currentArchiveIndex === archives.length - 1}
-                className={`px-4 py-2 rounded ${
-                  currentArchiveIndex === archives.length - 1
-                    ? "bg-gray-600"
-                    : "bg-blue-600 hover:bg-blue-700"
-                } text-white`}
-              >
-                Next
-              </button>
-            </div>
-            <button
-              onClick={() => setShowGames(false)}
-              className="absolute top-4 right-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-            >
-              Close
-            </button>
+      <div className="space-y-4 bg-black-200 p-4 rounded">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex items-center space-x-2">
+            <h3 className="font-medium">Depth</h3>
+            <FaTools className="text-xl text-green-500" />
           </div>
+          <span className="text-sm bg-black-100 px-3 py-1 rounded lg:hidden">{depth}</span>
         </div>
+        <div className="flex items-center space-x-4">
+          <input
+            type="range"
+            min={14}
+            max={20}
+            value={depth}
+            onChange={handleDepthChange}
+            className="w-full h-3 rounded-lg bg-gray-600 cursor-pointer"
+          />
+          <span className="text-sm bg-gray-600 px-3 py-1 rounded hidden lg:block">{depth}</span>
+        </div>
+      </div>
+
+      {showGames && (
+        <GameModal
+          show={showGames}
+          onClose={() => setShowGames(false)}
+          games={games}
+          currentMonth={currentMonth}
+          onPreviousMonth={handlePreviousMonth}
+          onNextMonth={handleNextMonth}
+          disablePrevious={currentArchiveIndex === 0}
+          disableNext={currentArchiveIndex === archives.length - 1}
+          onSelectGame={handleGameSelect}
+        />
       )}
     </div>
   );
