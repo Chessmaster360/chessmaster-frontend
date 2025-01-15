@@ -4,8 +4,8 @@ import { getPlayerArchives, getGamesFromMonth } from "../../services/chessServic
 import GameModal from "./GameModal"; // Asegúrate de importar correctamente el modal
 
 interface Game {
-  white: { username: string; elo: number };
-  black: { username: string; elo: number };
+  white: { username: string; rating: number };
+  black: { username: string; rating: number };
   pgn: string;
 }
 

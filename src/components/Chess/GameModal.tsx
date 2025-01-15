@@ -1,8 +1,8 @@
 import React from "react";
 
 interface Game {
-  white: { username: string; elo: number };
-  black: { username: string; elo: number };
+  white: { username: string; rating: number };
+  black: { username: string; rating: number };
   pgn: string;
 }
 
@@ -62,7 +62,7 @@ const GameModal: React.FC<ModalProps> = ({
                       style={{ backgroundColor: "#fff" }}
                     ></span>
                     <span className="text-sm">
-                      {game.white.username} ({game.white.elo})
+                      {game.white.username} ({game.white.rating})
                     </span>
                   </div>
                   <span className="text-gray-400">vs</span>
@@ -73,7 +73,7 @@ const GameModal: React.FC<ModalProps> = ({
                       style={{ backgroundColor: "#000" }}
                     ></span>
                     <span className="text-sm">
-                      {game.black.username} ({game.black.elo})
+                      {game.black.username} ({game.black.rating})
                     </span>
                   </div>
                 </div>
