@@ -1,7 +1,11 @@
 import axios from 'axios';
 
-// Base URL del backend
-const BASE_URL = 'http://localhost:3000/api/chess'; // Asegúrate de que esta URL sea correcta según tu configuración
+// Obtén la URL base desde las variables de entorno
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+if (!BASE_URL) {
+  throw new Error("REACT_APP_API_BASE_URL is not defined");
+}
 
 /**
  * Obtiene los archivos de juegos del usuario.
