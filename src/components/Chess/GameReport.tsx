@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { FaChessKnight, FaTools, FaSearch, FaArrowRight } from "react-icons/fa";
+import { FaChessKnight, FaTools, FaSearch, FaArrowRight, FaCheck, FaSpinner } from "react-icons/fa";
 import { getPlayerArchives, getGamesFromMonth } from "../../services/chessService";
 import GameModal from "./GameModal"; // Asegúrate de importar correctamente el modal
 
@@ -17,10 +17,9 @@ const GameReport: React.FC = () => {
   const [warning, setWarning] = useState<string>("");
   const [games, setGames] = useState<Game[]>([]);
   const [archives, setArchives] = useState<string[]>([]);
-  const [currentArchiveIndex, setCurrentArchiveIndex] = useState<number>(0);
-  const [currentMonth, setCurrentMonth] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false); // Estado para la carga
+  const [isSuccess, setIsSuccess] = useState<boolean>(false); // Estado para éxito
 
-  // Manejo de cambios en las opciones
   const handleOptionChange = useCallback((event: React.ChangeEvent<HTMLSelectElement>) => {
     setOption(event.target.value);
     setInputValue("");
@@ -32,13 +31,19 @@ const GameReport: React.FC = () => {
   }, []);
 
   const handleSearch = useCallback(async () => {
+    setIsLoading(true);
+    setIsSuccess(false);
+    setWarning("");
+    
     if (!inputValue.trim()) {
       setWarning("Please enter a username.");
+      setIsLoading(false);
       return;
     }
 
     if (option !== "chess.com") {
       setWarning("This feature currently only works for Chess.com.");
+      setIsLoading(false);
       return;
     }
 
@@ -47,12 +52,8 @@ const GameReport: React.FC = () => {
       setArchives(playerArchives);
 
       if (playerArchives.length > 0) {
-        setCurrentArchiveIndex(playerArchives.length - 1);
-        const [year, month] = playerArchives[playerArchives.length - 1].split("/").slice(-2);
-        setCurrentMonth(`${year}-${month}`);
-        const gamesForMonth = await getGamesFromMonth(inputValue.trim(), parseInt(year), parseInt(month));
-        setGames(gamesForMonth);
         setShowGames(true);
+        setIsSuccess(true); // Éxito en la búsqueda
       } else {
         setWarning("No games found for this user.");
         setShowGames(false);
@@ -63,6 +64,8 @@ const GameReport: React.FC = () => {
       setArchives([]);
       setGames([]);
       setShowGames(false);
+    } finally {
+      setIsLoading(false); // Finaliza la carga
     }
   }, [inputValue, option]);
 
@@ -71,37 +74,15 @@ const GameReport: React.FC = () => {
     setShowGames(false);
   }, []);
 
-  const handlePreviousMonth = useCallback(async () => {
-    if (currentArchiveIndex > 0) {
-      const newIndex = currentArchiveIndex - 1;
-      setCurrentArchiveIndex(newIndex);
-      const [year, month] = archives[newIndex].split("/").slice(-2);
-      setCurrentMonth(`${year}-${month}`);
-
-      try {
-        const gamesForMonth = await getGamesFromMonth(inputValue.trim(), parseInt(year), parseInt(month));
-        setGames(gamesForMonth);
-      } catch {
-        setWarning("Error fetching games for previous month.");
-      }
+  const handleMonthSelect = useCallback(async (month: string) => {
+    const [year, monthNumber] = month.split("-");
+    try {
+      const gamesForMonth = await getGamesFromMonth(inputValue.trim(), parseInt(year), parseInt(monthNumber));
+      setGames(gamesForMonth);
+    } catch {
+      setWarning("Error fetching games for selected month.");
     }
-  }, [currentArchiveIndex, archives, inputValue]);
-
-  const handleNextMonth = useCallback(async () => {
-    if (currentArchiveIndex < archives.length - 1) {
-      const newIndex = currentArchiveIndex + 1;
-      setCurrentArchiveIndex(newIndex);
-      const [year, month] = archives[newIndex].split("/").slice(-2);
-      setCurrentMonth(`${year}-${month}`);
-
-      try {
-        const gamesForMonth = await getGamesFromMonth(inputValue.trim(), parseInt(year), parseInt(month));
-        setGames(gamesForMonth);
-      } catch {
-        setWarning("Error fetching games for next month.");
-      }
-    }
-  }, [currentArchiveIndex, archives, inputValue]);
+  }, [inputValue]);
 
   return (
     <div className="bg-black-600 text-white p-4 rounded shadow-md border border-black-600 w-full max-w-[90vw] lg:max-w-[800px] mx-auto mb-8">
@@ -128,7 +109,13 @@ const GameReport: React.FC = () => {
               onClick={handleSearch}
               className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 flex items-center"
             >
-              <FaSearch aria-hidden="true" />
+              {isLoading ? (
+                <FaSpinner className="animate-spin" />
+              ) : isSuccess ? (
+                <FaCheck />
+              ) : (
+                <FaSearch />
+              )}
               <span className="sr-only">Search</span>
             </button>
           )}
@@ -180,11 +167,8 @@ const GameReport: React.FC = () => {
           show={showGames}
           onClose={() => setShowGames(false)}
           games={games}
-          currentMonth={currentMonth}
-          onPreviousMonth={handlePreviousMonth}
-          onNextMonth={handleNextMonth}
-          disablePrevious={currentArchiveIndex === 0}
-          disableNext={currentArchiveIndex === archives.length - 1}
+          archives={archives}
+          onMonthSelect={handleMonthSelect}
           onSelectGame={handleGameSelect}
         />
       )}
