@@ -21,7 +21,7 @@ const GameReport: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false); // Estado para la carga
   const [isSuccess, setIsSuccess] = useState<boolean>(false); // Estado para éxito
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [analysisResult, setAnalysisResult] = useState<any>(null);
+  const [, setAnalysisResult] = useState<any>(null);
 
   const handleOptionChange = useCallback((event: React.ChangeEvent<HTMLSelectElement>) => {
     setOption(event.target.value);
