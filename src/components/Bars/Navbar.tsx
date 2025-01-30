@@ -39,11 +39,6 @@ const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
             </button>
           </li>
           <li>
-            <button className="text-white hover:text-gray-300 transition-colors">
-              Learn
-            </button>
-          </li>
-          <li>
             <button
               className="text-white hover:text-gray-300 transition-colors"
               onClick={onLoginClick}
@@ -103,12 +98,6 @@ const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
               </button>
             </li>
             <li>
-              <button
-                className="text-white hover:text-gray-300 transition-colors"
-                onClick={toggleMenu}
-              >
-                Learn
-              </button>
             </li>
             <li>
               <button
