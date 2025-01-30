@@ -67,3 +67,17 @@ export const getPGN = async (
     throw new Error('Could not fetch PGN for the specified month.');
   }
 };
+
+// Add this new function to chessService
+export const analyzeGame = async (pgn: string, depth: number) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/analyze`, {
+      pgn,
+      depth
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error analyzing game:', error);
+    throw new Error('Could not analyze game.');
+  }
+};

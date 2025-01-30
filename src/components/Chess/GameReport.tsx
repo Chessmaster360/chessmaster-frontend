@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { FaChessKnight, FaTools, FaSearch, FaArrowRight, FaCheck, FaSpinner } from "react-icons/fa";
-import { getPlayerArchives, getGamesFromMonth } from "../../services/chessService";
+import { getPlayerArchives, getGamesFromMonth, analyzeGame } from "../../services/chessService";
 import GameModal from "./GameModal"; // Asegúrate de importar correctamente el modal
 
 interface Game {
@@ -20,6 +20,8 @@ const GameReport: React.FC = () => {
   const [archives, setArchives] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false); // Estado para la carga
   const [isSuccess, setIsSuccess] = useState<boolean>(false); // Estado para éxito
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState<any>(null);
 
   const handleOptionChange = useCallback((event: React.ChangeEvent<HTMLSelectElement>) => {
     setOption(event.target.value);
@@ -85,6 +87,28 @@ const GameReport: React.FC = () => {
     }
   }, [inputValue]);
 
+  // Add this handler for analyze button
+  const handleAnalyze = useCallback(async () => {
+    setIsAnalyzing(true);
+    setWarning("");
+
+    if (option === "pgn" && !inputValue.trim()) {
+      setWarning("Please enter a PGN to analyze.");
+      setIsAnalyzing(false);
+      return;
+    }
+
+    try {
+      const analysisData = await analyzeGame(inputValue.trim(), depth);
+      setAnalysisResult(analysisData);
+      // Handle successful analysis here (e.g., show results modal)
+    } catch (error) {
+      setWarning("Error analyzing game. Please check the PGN format.");
+    } finally {
+      setIsAnalyzing(false);
+    }
+  }, [inputValue, depth, option]);
+
   return (
     <div className="bg-black-600 text-white p-4 rounded shadow-md border border-black-600 w-full max-w-[90vw] lg:max-w-[800px] mx-auto mb-8">
       {/* Header with "?" button */}
@@ -103,7 +127,7 @@ const GameReport: React.FC = () => {
       {/* Instructions Modal */}
       {showInstructionsModal && (
         <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-75 flex items-center justify-center z-50">
-          <div className="bg-gray-900 text-white p-6 rounded w-11/12 max-w-[500px] relative">
+          <div className="bg-black-600 text-white p-6 rounded w-11/12 max-w-[500px] relative">
             <button
               onClick={() => setShowInstructionsModal(false)}
               className="absolute top-2 right-2 text-white hover:text-gray-300 text-xl"
@@ -112,7 +136,7 @@ const GameReport: React.FC = () => {
             </button>
             <p className="text-sm">
               Enter a PGN game format to analyze manually, or find the PGN format 
-              of a game played by any user by entering the USERNAME of the chess.com platform.
+              of a game played by any user by entering the USERNAME of the chess.com platform 👨‍💻⚡.
             </p>
           </div>
         </div>
@@ -120,17 +144,22 @@ const GameReport: React.FC = () => {
 
       <div className="flex flex-col lg:flex-row items-center lg:items-start space-y-4 lg:space-y-0 lg:space-x-4 mb-6 w-full">
         <div className="relative flex-grow w-full">
-          <input
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder={
-              option === "chess.com" || option === "lichess.org"
-                ? "Enter the username..."
-                : "Enter PGN..."
-            }
-            className="w-full bg-black-200 text-white px-4 py-2 rounded pr-12"
-          />
+            <input
+              type="text"
+              value={inputValue}
+              onChange={(e) => {
+                setInputValue(e.target.value);
+                setWarning(""); // Clear warning when typing
+              }}
+              placeholder={
+                option === "chess.com" || option === "lichess.org"
+                  ? "Enter the username..."
+                  : "Enter PGN..."
+              }
+              className={`w-full bg-black-200 text-white px-4 py-2 rounded pr-12 ${
+                warning && option === "pgn" ? "border border-red-500" : ""
+              }`}
+            />
           {option !== "pgn" && (
             <button
               onClick={handleSearch}
@@ -159,14 +188,22 @@ const GameReport: React.FC = () => {
       </div>
 
       <div className="mb-6">
-        <button
-          className="w-full bg-green-600 px-4 py-2 rounded hover:bg-green-700 flex items-center justify-center space-x-2"
-        >
-          <FaArrowRight aria-hidden="true" />
-          <span>Analyze</span>
-        </button>
-        {warning && <p className="mt-2 text-sm text-red-500 text-center">{warning}</p>}
-      </div>
+      <button
+        onClick={handleAnalyze}
+        className="w-full bg-green-600 px-4 py-2 rounded hover:bg-green-700 flex items-center justify-center space-x-2"
+        disabled={isAnalyzing}
+      >
+        {isAnalyzing ? (
+          <FaSpinner className="animate-spin" />
+        ) : (
+          <>
+            <FaArrowRight aria-hidden="true" />
+            <span>Analyze</span>
+          </>
+        )}
+      </button>
+      {warning && <p className="mt-2 text-sm text-red-500 text-center">{warning}</p>}
+    </div>
 
       <div className="space-y-4 bg-black-200 p-4 rounded">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
@@ -179,7 +216,7 @@ const GameReport: React.FC = () => {
         <div className="flex items-center space-x-4">
           <input
             type="range"
-            min={14}
+            min={15}
             max={20}
             value={depth}
             onChange={handleDepthChange}
