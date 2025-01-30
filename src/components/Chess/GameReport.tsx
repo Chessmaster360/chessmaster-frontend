@@ -10,6 +10,7 @@ interface Game {
 }
 
 const GameReport: React.FC = () => {
+  const [showInstructionsModal, setShowInstructionsModal] = useState(false); // New state
   const [option, setOption] = useState<string>("pgn");
   const [inputValue, setInputValue] = useState<string>("");
   const [depth, setDepth] = useState<number>(14);
@@ -86,10 +87,36 @@ const GameReport: React.FC = () => {
 
   return (
     <div className="bg-black-600 text-white p-4 rounded shadow-md border border-black-600 w-full max-w-[90vw] lg:max-w-[800px] mx-auto mb-8">
-      <header className="flex items-center mb-6 flex-col lg:flex-row lg:space-x-3 text-center lg:text-left">
+      {/* Header with "?" button */}
+      <header className="relative flex items-center mb-6 flex-col lg:flex-row lg:space-x-3 text-center lg:text-left">
         <FaChessKnight className="text-3xl text-green-600 mb-2 lg:mb-0" />
         <h2 className="text-2xl font-semibold">Game Report</h2>
+        <button
+          onClick={() => setShowInstructionsModal(true)}
+          className="absolute top-2 right-2 bg-gray-600 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-gray-500"
+          aria-label="Show instructions"
+        >
+          ?
+        </button>
       </header>
+
+      {/* Instructions Modal */}
+      {showInstructionsModal && (
+        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-75 flex items-center justify-center z-50">
+          <div className="bg-gray-900 text-white p-6 rounded w-11/12 max-w-[500px] relative">
+            <button
+              onClick={() => setShowInstructionsModal(false)}
+              className="absolute top-2 right-2 text-white hover:text-gray-300 text-xl"
+            >
+              ×
+            </button>
+            <p className="text-sm">
+              Enter a PGN game format to analyze manually, or find the PGN format 
+              of a game played by any user by entering the USERNAME of the chess.com platform.
+            </p>
+          </div>
+        </div>
+      )}
 
       <div className="flex flex-col lg:flex-row items-center lg:items-start space-y-4 lg:space-y-0 lg:space-x-4 mb-6 w-full">
         <div className="relative flex-grow w-full">

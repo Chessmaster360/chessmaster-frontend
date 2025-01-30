@@ -41,8 +41,8 @@ const squareImages = {
 
 // Main ChessBoard Component
 const ChessBoard: React.FC = () => {
-  const blackPlayer = { name: "Hikaru Nakamura", elo: 2804 };
-  const whitePlayer = { name: "Magnus Carlsen", elo: 2834 };
+  const blackPlayer = { name: "Black Pieces", elo: 0 };
+  const whitePlayer = { name: "White Pieces", elo: 0 };
 
   return (
     <div className="flex items-start gap-4 mt-16 mb-16">
