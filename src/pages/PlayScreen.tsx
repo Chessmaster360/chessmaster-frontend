@@ -38,11 +38,42 @@ const bots: Bot[] = [
 const PlayScreen: React.FC = () => {
   const [selectedBot, setSelectedBot] = useState<Bot | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [showComingSoonModal, setShowComingSoonModal] = useState(true); // New state
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   return (
     <div className="h-screen flex text-gray-200">
+
+      {/* Coming Soon Modal */}
+      {showComingSoonModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+          <div className="bg-black-600 p-6 rounded max-w-md mx-4 relative">
+            <button
+              onClick={() => setShowComingSoonModal(false)}
+              className="absolute top-2 right-2 text-white hover:text-gray-300 text-2xl"
+            >
+              ×
+            </button>
+            <h2 className="text-2xl font-bold mb-4 text-center text-purple-400">
+              ⚙️ Coming Soon!
+            </h2>
+            <p className="text-center text-gray-300">
+              We're working hard to bring you the bot battle functionality!
+              Stay tuned for updates. 🚀
+            </p>
+            <div className="mt-4 flex justify-center">
+              <button
+                onClick={() => setShowComingSoonModal(false)}
+                className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-2 rounded"
+              >
+                Got it!
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Contenedor central */}
       <div className="container mx-auto flex flex-col md:flex-row items-center justify-center rounded-lg shadow-lg p-4 md:gap-2 max-w-4xl">
         {/* Tablero de Ajedrez */}
