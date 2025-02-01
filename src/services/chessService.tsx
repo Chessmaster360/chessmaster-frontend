@@ -14,7 +14,7 @@ if (!BASE_URL) {
  */
 export const getPlayerArchives = async (username: string) => {
   try {
-    const response = await axios.get(`${BASE_URL}/archives/${username}`);
+    const response = await axios.get(`${BASE_URL}/api/chess/archives/${username}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching player archives:', error);
@@ -71,7 +71,7 @@ export const getPGN = async (
 // Add this new function to chessService
 export const analyzeGame = async (pgn: string, depth: number) => {
   try {
-    const response = await axios.post(`${BASE_URL}/analyze`, {
+    const response = await axios.post(`${BASE_URL}/api/chess/analyze`, {
       pgn,
       depth
     });
