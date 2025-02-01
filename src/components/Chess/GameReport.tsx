@@ -42,7 +42,6 @@ const GameReport: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false); // Estado para la carga
   const [isSuccess, setIsSuccess] = useState<boolean>(false); // Estado para éxito
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [, setAnalysisResult] = useState<any>(null);
   const [analysisProgress, setAnalysisProgress] = useState(0);
   const [analysisData, setAnalysisData] = useState<AnalysisResult | null>(null);
 
