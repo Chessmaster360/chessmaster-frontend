@@ -2,11 +2,32 @@ import React, { useState, useCallback } from "react";
 import { FaChessKnight, FaTools, FaSearch, FaArrowRight, FaCheck, FaSpinner } from "react-icons/fa";
 import { getPlayerArchives, getGamesFromMonth, analyzeGame } from "../../services/chessService";
 import GameModal from "./GameModal"; // Asegúrate de importar correctamente el modal
+import AnalysisReport from "./AnalysisReport"; // Import the AnalysisReport component
+
 
 interface Game {
   white: { username: string; rating: number };
   black: { username: string; rating: number };
   pgn: string;
+}
+// Add these interfaces to your chessService file
+export interface AnalysisResult {
+  accuracy: number;
+  classifications: {
+    excellent: number;
+    good: number;
+    mistake: number;
+    blunder: number;
+  };
+  positions: EvaluatedPosition[];
+}
+
+export interface EvaluatedPosition {
+  fen: string;
+  move: string;
+  classification: 'excellent' | 'good' | 'mistake' | 'blunder';
+  suggestedMove: string;
+  evaluation: number;
 }
 
 const GameReport: React.FC = () => {
@@ -22,6 +43,42 @@ const GameReport: React.FC = () => {
   const [isSuccess, setIsSuccess] = useState<boolean>(false); // Estado para éxito
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [, setAnalysisResult] = useState<any>(null);
+  const [analysisProgress, setAnalysisProgress] = useState(0);
+  const [analysisData, setAnalysisData] = useState<AnalysisResult | null>(null);
+
+    // Modified handleAnalyze function
+  const handleAnalyze = useCallback(async () => {
+    setIsAnalyzing(true);
+    setAnalysisData(null);
+    setWarning("");
+    setAnalysisProgress(0);
+
+    if (option === "pgn" && !inputValue.trim()) {
+      setWarning("Please enter a PGN to analyze.");
+      setIsAnalyzing(false);
+      return;
+    }
+
+    try {
+      // Simulate progress updates
+      const progressInterval = setInterval(() => {
+        setAnalysisProgress(prev => Math.min(prev + Math.random() * 10, 90));
+      }, 500);
+
+      const analysisData = await analyzeGame(inputValue.trim(), depth);
+      
+      clearInterval(progressInterval);
+      setAnalysisProgress(100);
+      await new Promise(resolve => setTimeout(resolve, 300)); // Smooth finish
+      
+      setAnalysisData(analysisData);
+    } catch (error) {
+      setWarning("Error analyzing game. Please check the PGN format.");
+    } finally {
+      setIsAnalyzing(false);
+      setAnalysisProgress(0);
+    }
+  }, [inputValue, depth, option]);
 
   const handleOptionChange = useCallback((event: React.ChangeEvent<HTMLSelectElement>) => {
     setOption(event.target.value);
@@ -86,28 +143,6 @@ const GameReport: React.FC = () => {
       setWarning("Error fetching games for selected month.");
     }
   }, [inputValue]);
-
-  // Add this handler for analyze button
-  const handleAnalyze = useCallback(async () => {
-    setIsAnalyzing(true);
-    setWarning("");
-
-    if (option === "pgn" && !inputValue.trim()) {
-      setWarning("Please enter a PGN to analyze.");
-      setIsAnalyzing(false);
-      return;
-    }
-
-    try {
-      const analysisData = await analyzeGame(inputValue.trim(), depth);
-      setAnalysisResult(analysisData);
-      // Handle successful analysis here (e.g., show results modal)
-    } catch (error) {
-      setWarning("Error analyzing game. Please check the PGN format.");
-    } finally {
-      setIsAnalyzing(false);
-    }
-  }, [inputValue, depth, option]);
 
   return (
     <div className="bg-black-600 text-white p-4 rounded shadow-md border border-black-600 w-full max-w-[90vw] lg:max-w-[800px] mx-auto mb-8">
@@ -203,8 +238,31 @@ const GameReport: React.FC = () => {
         )}
       </button>
       {warning && <p className="mt-2 text-sm text-red-500 text-center">{warning}</p>}
-    </div>
 
+    {isAnalyzing && (
+      <div className="mt-4 bg-black-200 p-4 rounded">
+        <div className="flex items-center gap-3 text-sm">
+          <FaSpinner className="animate-spin" />
+          <div className="flex-1">
+            <div className="h-2 bg-gray-700 rounded-full">
+              <div 
+                className="h-full bg-gradient-to-r from-green-400 to-blue-500 rounded-full transition-all duration-300"
+                style={{ width: `${analysisProgress}%` }}
+              ></div>
+            </div>
+            <div className="mt-1 text-right text-xs text-gray-400">
+              {Math.floor(analysisProgress)}% Analyzed
+            </div>
+          </div>
+        </div>
+        <p className="mt-2 text-xs text-center text-gray-400">
+          Analyzing {analysisProgress > 50 ? "critical positions" : "opening moves"}...
+        </p>
+      </div>
+    )}
+    {analysisData && <AnalysisReport result={analysisData} />}
+
+    </div>
       <div className="space-y-4 bg-black-200 p-4 rounded">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center space-x-2">
