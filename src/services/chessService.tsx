@@ -36,7 +36,7 @@ export const getGamesFromMonth = async (
 ) => {
   try {
     const response = await axios.get(
-      `${BASE_URL}/games/${username}/${year}/${month}`
+      `${BASE_URL}/api/chess/games/${username}/${year}/${month}`
     );
     return response.data;
   } catch (error) {
@@ -59,7 +59,7 @@ export const getPGN = async (
 ) => {
   try {
     const response = await axios.get(
-      `${BASE_URL}/pgn/${username}/${year}/${month}`
+      `${BASE_URL}api/chess/pgn/${username}/${year}/${month}`
     );
     return response.data;
   } catch (error) {
