@@ -11,10 +11,10 @@ const AnalyzeScreen: React.FC = () => {
         <ChessBoard />
       </div>
 
-      {/* Game Report + Controls */}
-      <div className="flex flex-col flex-1 w-full max-w-md space-y-0">
-        <GameReport />
+      {/* Controls + Game Report */}
+      <div className="flex flex-col flex-1 w-full max-w-md space-y-4">
         <Controls />
+        <GameReport />
       </div>
     </div>
   );

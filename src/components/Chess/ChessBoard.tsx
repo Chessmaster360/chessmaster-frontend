@@ -1,39 +1,29 @@
 import React from "react";
 import EvaluationBar from "./EvaluationBar";
 import PlayerInfo from "./PlayerInfo";
-
-// Define the initial position of the pieces
-const initialBoard: Record<string, string> = {
-  A1: "whiteRook", B1: "whiteKnight", C1: "whiteBishop", D1: "whiteQueen",
-  E1: "whiteKing", F1: "whiteBishop", G1: "whiteKnight", H1: "whiteRook",
-  A2: "whitePawn", B2: "whitePawn", C2: "whitePawn", D2: "whitePawn",
-  E2: "whitePawn", F2: "whitePawn", G2: "whitePawn", H2: "whitePawn",
-  A7: "blackPawn", B7: "blackPawn", C7: "blackPawn", D7: "blackPawn",
-  E7: "blackPawn", F7: "blackPawn", G7: "blackPawn", H7: "blackPawn",
-  A8: "blackRook", B8: "blackKnight", C8: "blackBishop", D8: "blackQueen",
-  E8: "blackKing", F8: "blackBishop", G8: "blackKnight", H8: "blackRook",
-};
+import { useGameStore, ChessPiece } from "../../store/useGameStore";
 
 const rows = [8, 7, 6, 5, 4, 3, 2, 1];
-const cols = ["A", "B", "C", "D", "E", "F", "G", "H"];
+const cols = ["a", "b", "c", "d", "e", "f", "g", "h"];
 
-// Paths to the piece images
-const pieceImages: Record<string, string> = {
-  whitePawn: "/assets/board_pieces/white_pawn.png",
-  whiteRook: "/assets/board_pieces/white_rook.png",
-  whiteKnight: "/assets/board_pieces/white_knight.png",
-  whiteBishop: "/assets/board_pieces/white_bishop.png",
-  whiteQueen: "/assets/board_pieces/white_queen.png",
-  whiteKing: "/assets/board_pieces/white_king.png",
-  blackPawn: "/assets/board_pieces/black_pawn.png",
-  blackRook: "/assets/board_pieces/black_rook.png",
-  blackKnight: "/assets/board_pieces/black_knight.png",
-  blackBishop: "/assets/board_pieces/black_bishop.png",
-  blackQueen: "/assets/board_pieces/black_queen.png",
-  blackKing: "/assets/board_pieces/black_king.png",
+// Map chess.js piece notation to image paths
+const getPieceImage = (piece: ChessPiece | null): string | null => {
+  if (!piece) return null;
+
+  const colorName = piece.color === 'w' ? 'white' : 'black';
+  const pieceNames: Record<string, string> = {
+    'p': 'pawn',
+    'n': 'knight',
+    'b': 'bishop',
+    'r': 'rook',
+    'q': 'queen',
+    'k': 'king',
+  };
+
+  return `/assets/board_pieces/${colorName}_${pieceNames[piece.type]}.png`;
 };
 
-// Paths to square images
+// Square background images
 const squareImages = {
   light: "/assets/board_pieces/square_brown_light.png",
   dark: "/assets/board_pieces/square_brown_dark.png",
@@ -41,8 +31,23 @@ const squareImages = {
 
 // Main ChessBoard Component
 const ChessBoard: React.FC = () => {
-  const blackPlayer = { name: "Black Pieces", elo: 0 };
-  const whitePlayer = { name: "White Pieces", elo: 0 };
+  const boardState = useGameStore((state) => state.boardState);
+  const metadata = useGameStore((state) => state.metadata);
+  const currentMoveIndex = useGameStore((state) => state.currentMoveIndex);
+  const moves = useGameStore((state) => state.moves);
+
+  // Get player info from metadata or defaults
+  const blackPlayer = {
+    name: metadata?.black || "Black Pieces",
+    elo: metadata?.blackElo || 0,
+  };
+  const whitePlayer = {
+    name: metadata?.white || "White Pieces",
+    elo: metadata?.whiteElo || 0,
+  };
+
+  // Get the last move for highlighting
+  const lastMove = currentMoveIndex >= 0 ? moves[currentMoveIndex]?.move : null;
 
   return (
     <div className="flex items-start gap-4 mt-16 mb-16">
@@ -60,24 +65,35 @@ const ChessBoard: React.FC = () => {
           {rows.map((row) =>
             cols.map((col) => {
               const square = `${col}${row}`;
-              const isDark = (row + cols.indexOf(col)) % 2 !== 0; // Alternate square colors
-              const piece = initialBoard[square];
+              const colIndex = cols.indexOf(col);
+              const isDark = (row + colIndex) % 2 !== 0;
+              const piece = boardState[square];
+              const pieceImage = getPieceImage(piece);
               const squareImage = isDark ? squareImages.dark : squareImages.light;
+
+              // Highlight last move squares
+              const isFromSquare = lastMove?.from === square;
+              const isToSquare = lastMove?.to === square;
+              const isHighlighted = isFromSquare || isToSquare;
 
               return (
                 <div
                   key={square}
-                  className="relative w-full h-full"
+                  className={`relative w-full h-full ${isHighlighted ? 'ring-2 ring-yellow-400 ring-inset' : ''}`}
                   style={{
                     backgroundImage: `url(${squareImage})`,
                     backgroundSize: "cover",
                   }}
                 >
-                  {piece && (
+                  {pieceImage && (
                     <img
-                      src={pieceImages[piece]}
-                      alt={piece}
-                      className="absolute inset-0 w-[90%] h-[90%] object-contain m-auto"
+                      src={pieceImage}
+                      alt={`${piece?.color === 'w' ? 'White' : 'Black'} ${piece?.type}`}
+                      className="absolute inset-0 w-[90%] h-[90%] object-contain m-auto transition-all duration-300 ease-in-out"
+                      style={{
+                        // Add subtle animation when pieces change
+                        animation: isToSquare ? 'pieceMove 0.3s ease-out' : undefined,
+                      }}
                     />
                   )}
                 </div>
@@ -86,6 +102,20 @@ const ChessBoard: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* CSS Animation for piece movement - inline style injection */}
+      <style>{`
+        @keyframes pieceMove {
+          0% {
+            transform: scale(1.15);
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.4));
+          }
+          100% {
+            transform: scale(1);
+            filter: none;
+          }
+        }
+      `}</style>
     </div>
   );
 };

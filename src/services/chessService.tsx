@@ -1,10 +1,13 @@
 import axios from 'axios';
 
 // Obtén la URL base desde las variables de entorno
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+// En producción usa la URL de producción, en desarrollo usa localhost
+const BASE_URL = import.meta.env.VITE_API_BASE_URL ||
+  (import.meta.env.PROD ? 'https://your-production-api.com' : 'http://localhost:3000');
 
-if (!BASE_URL) {
-  throw new Error("REACT_APP_API_BASE_URL is not defined");
+// Solo mostrar advertencia si no está configurada la variable de entorno
+if (!import.meta.env.VITE_API_BASE_URL) {
+  console.warn('VITE_API_BASE_URL is not defined, using fallback:', BASE_URL);
 }
 
 /**

@@ -1,8 +1,9 @@
 import React, { useState, useCallback } from "react";
 import { FaChessKnight, FaTools, FaSearch, FaArrowRight, FaCheck, FaSpinner } from "react-icons/fa";
 import { getPlayerArchives, getGamesFromMonth, analyzeGame } from "../../services/chessService";
-import GameModal from "./GameModal"; // Asegúrate de importar correctamente el modal
-import AnalysisReport from "./AnalysisReport"; // Import the AnalysisReport component
+import GameModal from "./GameModal";
+import GameReviewSummary from "./GameReviewSummary";
+import { useGameStore } from "../../store/useGameStore";
 
 
 interface Game {
@@ -31,7 +32,7 @@ export interface EvaluatedPosition {
 }
 
 const GameReport: React.FC = () => {
-  const [showInstructionsModal, setShowInstructionsModal] = useState(false); // New state
+  const [showInstructionsModal, setShowInstructionsModal] = useState(false);
   const [option, setOption] = useState<string>("pgn");
   const [inputValue, setInputValue] = useState<string>("");
   const [depth, setDepth] = useState<number>(14);
@@ -39,45 +40,63 @@ const GameReport: React.FC = () => {
   const [warning, setWarning] = useState<string>("");
   const [games, setGames] = useState<Game[]>([]);
   const [archives, setArchives] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false); // Estado para la carga
-  const [isSuccess, setIsSuccess] = useState<boolean>(false); // Estado para éxito
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isSuccess, setIsSuccess] = useState<boolean>(false);
+  const [isAnalyzingLocal, setIsAnalyzingLocal] = useState(false);
   const [analysisProgress, setAnalysisProgress] = useState(0);
-  const [analysisData, setAnalysisData] = useState<AnalysisResult | null>(null);
 
-    // Modified handleAnalyze function
+  // Store hooks
+  const loadPGN = useGameStore((state) => state.loadPGN);
+  const setAnalysisResult = useGameStore((state) => state.setAnalysisResult);
+  const setIsAnalyzing = useGameStore((state) => state.setIsAnalyzing);
+  const analysisResult = useGameStore((state) => state.analysisResult);
+
+  // Modified handleAnalyze function
   const handleAnalyze = useCallback(async () => {
+    setIsAnalyzingLocal(true);
     setIsAnalyzing(true);
-    setAnalysisData(null);
     setWarning("");
     setAnalysisProgress(0);
 
     if (option === "pgn" && !inputValue.trim()) {
       setWarning("Please enter a PGN to analyze.");
+      setIsAnalyzingLocal(false);
       setIsAnalyzing(false);
       return;
     }
 
     try {
+      // First, load the PGN into the game store
+      const pgnLoaded = loadPGN(inputValue.trim());
+      if (!pgnLoaded) {
+        setWarning("Invalid PGN format.");
+        setIsAnalyzingLocal(false);
+        setIsAnalyzing(false);
+        return;
+      }
+
       // Simulate progress updates
       const progressInterval = setInterval(() => {
         setAnalysisProgress(prev => Math.min(prev + Math.random() * 10, 90));
       }, 500);
 
+      // Call the analysis API
       const analysisData = await analyzeGame(inputValue.trim(), depth);
-      
+
       clearInterval(progressInterval);
       setAnalysisProgress(100);
       await new Promise(resolve => setTimeout(resolve, 300)); // Smooth finish
-      
-      setAnalysisData(analysisData);
+
+      // Store the analysis result in the global store
+      setAnalysisResult(analysisData);
     } catch (error) {
       setWarning("Error analyzing game. Please check the PGN format.");
-    } finally {
       setIsAnalyzing(false);
+    } finally {
+      setIsAnalyzingLocal(false);
       setAnalysisProgress(0);
     }
-  }, [inputValue, depth, option]);
+  }, [inputValue, depth, option, loadPGN, setAnalysisResult, setIsAnalyzing]);
 
   const handleOptionChange = useCallback((event: React.ChangeEvent<HTMLSelectElement>) => {
     setOption(event.target.value);
@@ -93,7 +112,7 @@ const GameReport: React.FC = () => {
     setIsLoading(true);
     setIsSuccess(false);
     setWarning("");
-    
+
     if (!inputValue.trim()) {
       setWarning("Please enter a username.");
       setIsLoading(false);
@@ -131,7 +150,9 @@ const GameReport: React.FC = () => {
   const handleGameSelect = useCallback((pgn: string) => {
     setInputValue(pgn);
     setShowGames(false);
-  }, []);
+    // Load PGN into game store for visualization
+    loadPGN(pgn);
+  }, [loadPGN]);
 
   const handleMonthSelect = useCallback(async (month: string) => {
     const [year, monthNumber] = month.split("-");
@@ -169,7 +190,7 @@ const GameReport: React.FC = () => {
               ×
             </button>
             <p className="text-sm">
-              Enter a PGN game format to analyze manually, or find the PGN format 
+              Enter a PGN game format to analyze manually, or find the PGN format
               of a game played by any user by entering the USERNAME of the chess.com platform 👨‍💻⚡.
             </p>
           </div>
@@ -178,22 +199,21 @@ const GameReport: React.FC = () => {
 
       <div className="flex flex-col lg:flex-row items-center lg:items-start space-y-4 lg:space-y-0 lg:space-x-4 mb-6 w-full">
         <div className="relative flex-grow w-full">
-            <input
-              type="text"
-              value={inputValue}
-              onChange={(e) => {
-                setInputValue(e.target.value);
-                setWarning(""); // Clear warning when typing
-              }}
-              placeholder={
-                option === "chess.com" || option === "lichess.org"
-                  ? "Enter the username..."
-                  : "Enter PGN..."
-              }
-              className={`w-full bg-black-200 text-white px-4 py-2 rounded pr-12 ${
-                warning && option === "pgn" ? "border border-red-500" : ""
+          <input
+            type="text"
+            value={inputValue}
+            onChange={(e) => {
+              setInputValue(e.target.value);
+              setWarning(""); // Clear warning when typing
+            }}
+            placeholder={
+              option === "chess.com" || option === "lichess.org"
+                ? "Enter the username..."
+                : "Enter PGN..."
+            }
+            className={`w-full bg-black-200 text-white px-4 py-2 rounded pr-12 ${warning && option === "pgn" ? "border border-red-500" : ""
               }`}
-            />
+          />
           {option !== "pgn" && (
             <button
               onClick={handleSearch}
@@ -217,51 +237,51 @@ const GameReport: React.FC = () => {
           className="bg-black-200 text-white px-4 py-2 rounded w-full lg:w-[160px] text-center"
         >
           <option value="pgn">PGN</option>
-          <option value="chess.com">Chess.com</option>
         </select>
       </div>
 
       <div className="mb-6">
-      <button
-        onClick={handleAnalyze}
-        className="w-full bg-green-600 px-4 py-2 rounded hover:bg-green-700 flex items-center justify-center space-x-2"
-        disabled={isAnalyzing}
-      >
-        {isAnalyzing ? (
-          <FaSpinner className="animate-spin" />
-        ) : (
-          <>
-            <FaArrowRight aria-hidden="true" />
-            <span>Analyze</span>
-          </>
-        )}
-      </button>
-      {warning && <p className="mt-2 text-sm text-red-500 text-center">{warning}</p>}
+        <button
+          onClick={handleAnalyze}
+          className="w-full bg-green-600 px-4 py-2 rounded hover:bg-green-700 flex items-center justify-center space-x-2"
+          disabled={isAnalyzingLocal}
+        >
+          {isAnalyzingLocal ? (
+            <FaSpinner className="animate-spin" />
+          ) : (
+            <>
+              <FaArrowRight aria-hidden="true" />
+              <span>Analyze</span>
+            </>
+          )}
+        </button>
+        {warning && <p className="mt-2 text-sm text-red-500 text-center">{warning}</p>}
 
-    {isAnalyzing && (
-      <div className="mt-4 bg-black-200 p-4 rounded">
-        <div className="flex items-center gap-3 text-sm">
-          <FaSpinner className="animate-spin" />
-          <div className="flex-1">
-            <div className="h-2 bg-gray-700 rounded-full">
-              <div 
-                className="h-full bg-gradient-to-r from-green-400 to-blue-500 rounded-full transition-all duration-300"
-                style={{ width: `${analysisProgress}%` }}
-              ></div>
+        {isAnalyzingLocal && (
+          <div className="mt-4 bg-black-200 p-4 rounded">
+            <div className="flex items-center gap-3 text-sm">
+              <FaSpinner className="animate-spin" />
+              <div className="flex-1">
+                <div className="h-2 bg-gray-700 rounded-full">
+                  <div
+                    className="h-full bg-gradient-to-r from-green-400 to-blue-500 rounded-full transition-all duration-300"
+                    style={{ width: `${analysisProgress}%` }}
+                  ></div>
+                </div>
+                <div className="mt-1 text-right text-xs text-gray-400">
+                  {Math.floor(analysisProgress)}% Analyzed
+                </div>
+              </div>
             </div>
-            <div className="mt-1 text-right text-xs text-gray-400">
-              {Math.floor(analysisProgress)}% Analyzed
-            </div>
+            <p className="mt-2 text-xs text-center text-gray-400">
+              Analyzing {analysisProgress > 50 ? "critical positions" : "opening moves"}...
+            </p>
           </div>
-        </div>
-        <p className="mt-2 text-xs text-center text-gray-400">
-          Analyzing {analysisProgress > 50 ? "critical positions" : "opening moves"}...
-        </p>
-      </div>
-    )}
-    {analysisData && <AnalysisReport result={analysisData} />}
+        )}
 
-    </div>
+        {analysisResult && <GameReviewSummary />}
+      </div>
+
       <div className="space-y-4 bg-black-200 p-4 rounded">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center space-x-2">
