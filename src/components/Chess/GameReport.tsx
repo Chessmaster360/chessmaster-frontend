@@ -50,6 +50,12 @@ const GameReport: React.FC = () => {
   const setAnalysisResult = useGameStore((state) => state.setAnalysisResult);
   const setIsAnalyzing = useGameStore((state) => state.setIsAnalyzing);
   const analysisResult = useGameStore((state) => state.analysisResult);
+  const currentMoveIndex = useGameStore((state) => state.currentMoveIndex);
+  const moves = useGameStore((state) => state.moves);
+
+  // Get current move's suggested move
+  const currentMove = currentMoveIndex >= 0 ? moves[currentMoveIndex] : null;
+  const suggestedMove = currentMove?.suggestedMove;
 
   // Modified handleAnalyze function
   const handleAnalyze = useCallback(async () => {
@@ -283,6 +289,23 @@ const GameReport: React.FC = () => {
         {analysisResult && <GameReviewSummary />}
       </div>
 
+      {/* Best Move Suggestion */}
+      {analysisResult && suggestedMove && suggestedMove.san && (
+        <div className="bg-black-200 p-4 rounded mb-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <span className="text-green-400 font-bold">Best Move:</span>
+              <span className="bg-green-600 px-3 py-1 rounded font-mono text-lg">
+                {suggestedMove.san}
+              </span>
+            </div>
+            <span className="text-xs text-gray-400">
+              Move {currentMoveIndex + 1}
+            </span>
+          </div>
+        </div>
+      )}
+
       <div className="space-y-4 bg-black-200 p-4 rounded">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center space-x-2">
@@ -312,6 +335,7 @@ const GameReport: React.FC = () => {
           archives={archives}
           onMonthSelect={handleMonthSelect}
           onSelectGame={handleGameSelect}
+          username={inputValue.trim()}
         />
       )}
     </div>

@@ -27,13 +27,14 @@ const classificationIcons: Record<string, string> = {
     blunder: BlunderIcon,
 };
 
-// Display order for classifications
+// Display order for classifications (including book)
 const classificationOrder: Classification[] = [
     'brilliant',
     'great',
     'best',
     'excellent',
     'good',
+    'book',
     'inaccuracy',
     'mistake',
     'miss',
