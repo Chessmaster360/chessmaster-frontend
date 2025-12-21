@@ -165,7 +165,7 @@ const GameReport: React.FC = () => {
   }, [inputValue]);
 
   return (
-    <div className="bg-black-600 text-white p-4 rounded shadow-md border border-black-600 w-full max-w-[90vw] lg:max-w-[800px] mx-auto mb-8">
+    <div className="bg-black-600 text-white p-4 rounded shadow-md border border-black-600 w-full h-full flex flex-col">
       {/* Header with "?" button */}
       <header className="relative flex items-center mb-6 flex-col lg:flex-row lg:space-x-3 text-center lg:text-left">
         <FaChessKnight className="text-3xl text-green-600 mb-2 lg:mb-0" />
@@ -234,9 +234,10 @@ const GameReport: React.FC = () => {
         <select
           value={option}
           onChange={handleOptionChange}
-          className="bg-black-200 text-white px-4 py-2 rounded w-full lg:w-[160px] text-center"
+          className="bg-black-200 text-white px-4 py-2 rounded w-full lg:w-[160px] text-center border border-gray-600"
         >
           <option value="pgn">PGN</option>
+          <option value="chess.com">Chess.com</option>
         </select>
       </div>
 

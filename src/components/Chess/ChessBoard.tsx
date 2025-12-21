@@ -3,6 +3,32 @@ import EvaluationBar from "./EvaluationBar";
 import PlayerInfo from "./PlayerInfo";
 import { useGameStore, ChessPiece } from "../../store/useGameStore";
 
+// Import classification icons
+import BrilliantIcon from "../../assets/Moves/Brilliant.png";
+import GreatIcon from "../../assets/Moves/Great.png";
+import BestIcon from "../../assets/Moves/Best.png";
+import ExcellentIcon from "../../assets/Moves/Excellent.png";
+import GoodIcon from "../../assets/Moves/Good.png";
+import BookIcon from "../../assets/Moves/Book.png";
+import InaccuracyIcon from "../../assets/Moves/Inaccuracy.png";
+import MistakeIcon from "../../assets/Moves/Mistake.png";
+import MissIcon from "../../assets/Moves/Miss.png";
+import BlunderIcon from "../../assets/Moves/Blunder.png";
+
+// Classification icons mapping
+const classificationIcons: Record<string, string> = {
+  brilliant: BrilliantIcon,
+  great: GreatIcon,
+  best: BestIcon,
+  excellent: ExcellentIcon,
+  good: GoodIcon,
+  book: BookIcon,
+  inaccuracy: InaccuracyIcon,
+  mistake: MistakeIcon,
+  miss: MissIcon,
+  blunder: BlunderIcon,
+};
+
 const rows = [8, 7, 6, 5, 4, 3, 2, 1];
 const cols = ["a", "b", "c", "d", "e", "f", "g", "h"];
 
@@ -46,8 +72,10 @@ const ChessBoard: React.FC = () => {
     elo: metadata?.whiteElo || 0,
   };
 
-  // Get the last move for highlighting
-  const lastMove = currentMoveIndex >= 0 ? moves[currentMoveIndex]?.move : null;
+  // Get the last move for highlighting and classification
+  const currentMove = currentMoveIndex >= 0 ? moves[currentMoveIndex] : null;
+  const lastMove = currentMove?.move || null;
+  const currentClassification = currentMove?.classification;
 
   return (
     <div className="flex items-start gap-4 mt-16 mb-16">
@@ -55,13 +83,12 @@ const ChessBoard: React.FC = () => {
       <EvaluationBar />
 
       {/* Chessboard with Player Info */}
-      <div className="relative w-full max-w-[480px]">
-        {/* Player Info Components */}
+      <div className="relative w-full max-w-[580px]">
+        {/* Top Player Info */}
         <PlayerInfo name={blackPlayer.name} elo={blackPlayer.elo} position="top" />
-        <PlayerInfo name={whitePlayer.name} elo={whitePlayer.elo} position="bottom" />
 
-        {/* Chessboard */}
-        <div className="grid grid-cols-8 aspect-square w-full sm:w-[480px] sm:h-[480px] border border-black-200 relative">
+        {/* Chessboard - Square aspect ratio */}
+        <div className="grid grid-cols-8 aspect-square w-full sm:w-[580px] sm:h-[580px] border border-black-200 relative">
           {rows.map((row) =>
             cols.map((col) => {
               const square = `${col}${row}`;
@@ -76,10 +103,13 @@ const ChessBoard: React.FC = () => {
               const isToSquare = lastMove?.to === square;
               const isHighlighted = isFromSquare || isToSquare;
 
+              // Show classification icon on the destination square
+              const showClassificationIcon = isToSquare && currentClassification && classificationIcons[currentClassification];
+
               return (
                 <div
                   key={square}
-                  className={`relative w-full h-full ${isHighlighted ? 'ring-2 ring-yellow-400 ring-inset' : ''}`}
+                  className={`relative aspect-square ${isHighlighted ? 'ring-2 ring-yellow-400 ring-inset' : ''}`}
                   style={{
                     backgroundImage: `url(${squareImage})`,
                     backgroundSize: "cover",
@@ -89,11 +119,15 @@ const ChessBoard: React.FC = () => {
                     <img
                       src={pieceImage}
                       alt={`${piece?.color === 'w' ? 'White' : 'Black'} ${piece?.type}`}
-                      className="absolute inset-0 w-[90%] h-[90%] object-contain m-auto transition-all duration-300 ease-in-out"
-                      style={{
-                        // Add subtle animation when pieces change
-                        animation: isToSquare ? 'pieceMove 0.3s ease-out' : undefined,
-                      }}
+                      className="absolute inset-0 w-[90%] h-[90%] object-contain m-auto"
+                    />
+                  )}
+                  {/* Classification badge on destination square */}
+                  {showClassificationIcon && (
+                    <img
+                      src={classificationIcons[currentClassification]}
+                      alt={currentClassification}
+                      className="absolute -top-1 -right-1 w-4 h-4 lg:w-6 lg:h-6 z-10 drop-shadow-lg"
                     />
                   )}
                 </div>
@@ -101,21 +135,10 @@ const ChessBoard: React.FC = () => {
             })
           )}
         </div>
-      </div>
 
-      {/* CSS Animation for piece movement - inline style injection */}
-      <style>{`
-        @keyframes pieceMove {
-          0% {
-            transform: scale(1.15);
-            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.4));
-          }
-          100% {
-            transform: scale(1);
-            filter: none;
-          }
-        }
-      `}</style>
+        {/* Bottom Player Info */}
+        <PlayerInfo name={whitePlayer.name} elo={whitePlayer.elo} position="bottom" />
+      </div>
     </div>
   );
 };

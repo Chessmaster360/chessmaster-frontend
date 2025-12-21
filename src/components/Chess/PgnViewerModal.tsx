@@ -2,18 +2,30 @@ import React from "react";
 import { FaTimes } from "react-icons/fa";
 import { useGameStore, Classification } from "../../store/useGameStore";
 
-// Classification icons from assets
+// Import classification icons
+import BrilliantIcon from "../../assets/Moves/Brilliant.png";
+import GreatIcon from "../../assets/Moves/Great.png";
+import BestIcon from "../../assets/Moves/Best.png";
+import ExcellentIcon from "../../assets/Moves/Excellent.png";
+import GoodIcon from "../../assets/Moves/Good.png";
+import BookIcon from "../../assets/Moves/Book.png";
+import InaccuracyIcon from "../../assets/Moves/Inaccuracy.png";
+import MistakeIcon from "../../assets/Moves/Mistake.png";
+import MissIcon from "../../assets/Moves/Miss.png";
+import BlunderIcon from "../../assets/Moves/Blunder.png";
+
+// Classification icons mapping
 const classificationIcons: Record<string, string> = {
-    brilliant: "/assets/Moves/Brilliant.png",
-    great: "/assets/Moves/Great.png",
-    best: "/assets/Moves/Best.png",
-    excellent: "/assets/Moves/Excellent.png",
-    good: "/assets/Moves/Good.png",
-    book: "/assets/Moves/Book.png",
-    inaccuracy: "/assets/Moves/Inaccuracy.png",
-    mistake: "/assets/Moves/Mistake.png",
-    miss: "/assets/Moves/Miss.png",
-    blunder: "/assets/Moves/Blunder.png",
+    brilliant: BrilliantIcon,
+    great: GreatIcon,
+    best: BestIcon,
+    excellent: ExcellentIcon,
+    good: GoodIcon,
+    book: BookIcon,
+    inaccuracy: InaccuracyIcon,
+    mistake: MistakeIcon,
+    miss: MissIcon,
+    blunder: BlunderIcon,
 };
 
 // Classification colors for move text
@@ -99,7 +111,7 @@ const PgnViewerModal: React.FC<PgnViewerModalProps> = ({ show, onClose }) => {
 
     return (
         <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-75 flex items-center justify-center z-50">
-            <div className="bg-gray-900 text-white p-6 rounded-lg w-11/12 max-w-[500px] max-h-[80vh] flex flex-col shadow-xl">
+            <div className="bg-black-600 text-white p-6 rounded-lg w-11/12 max-w-[500px] max-h-[80vh] flex flex-col shadow-xl">
                 {/* Header */}
                 <div className="flex justify-between items-center mb-4 border-b border-gray-700 pb-3">
                     <div>
@@ -123,7 +135,7 @@ const PgnViewerModal: React.FC<PgnViewerModalProps> = ({ show, onClose }) => {
                 <div className="flex-1 overflow-y-auto">
                     {movePairs.length > 0 ? (
                         <table className="w-full text-sm">
-                            <thead className="sticky top-0 bg-gray-900">
+                            <thead className="sticky top-0 bg-black-600">
                                 <tr className="text-gray-400">
                                     <th className="w-12 text-left py-2">#</th>
                                     <th className="text-left py-2">White</th>
@@ -132,7 +144,7 @@ const PgnViewerModal: React.FC<PgnViewerModalProps> = ({ show, onClose }) => {
                             </thead>
                             <tbody>
                                 {movePairs.map((pair, pairIndex) => (
-                                    <tr key={pair.number} className="hover:bg-gray-800">
+                                    <tr key={pair.number} className="hover:bg-black-200">
                                         <td className="py-1 text-gray-500">{pair.number}.</td>
                                         <td className="py-1">
                                             {renderMove(pair.white, pairIndex * 2)}

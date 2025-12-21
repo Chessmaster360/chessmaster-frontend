@@ -64,7 +64,7 @@ const Controls: React.FC = () => {
       )}
 
       {/* Navigation buttons */}
-      <div className="flex justify-center items-center gap-2 sm:gap-4 bg-black-600 p-4 rounded shadow-md">
+      <div className="flex justify-center items-center gap-2 sm:gap-4 bg-black-600 p-3 rounded shadow-md w-full">
         <button
           className={getButtonClass(canGoBack)}
           aria-label="Go to start"

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import { FaChess } from "react-icons/fa";
 
 interface NavbarProps {
   onLoginClick: () => void; // Prop para manejar el clic en el botón Login
@@ -14,11 +15,15 @@ const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
   };
 
   return (
-    <nav className="text-white p-4 shadow-lg bg-black-600">
-      <div className="container mx-auto flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-white flex items-center">
-          ChessMaster360 <span className="ml-2 text-purple-500">♟️</span>
-        </h1>
+    <nav className="text-white p-4 shadow-lg bg-black-600 border-b border-black-500">
+      <div className="container mx-auto flex justify-between items-center ">
+        <div className="flex items-center gap-2">
+          <FaChess className="text-2xl text-green-500" />
+          <span className="text-xl font-bold text-white">
+            ChessMaster<span className="text-green-500">360</span>
+          </span>
+        </div>
+
 
         {/* Menú en pantallas grandes */}
         <ul className="hidden md:flex space-x-12">

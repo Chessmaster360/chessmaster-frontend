@@ -5,20 +5,29 @@ import Controls from "../components/Chess/Controls";
 
 const AnalyzeScreen: React.FC = () => {
   return (
-    <div className="flex flex-col lg:flex-row lg:flex-nowrap items-center lg:items-start justify-center gap-8 p-6 max-w-screen-lg mx-auto">
-      {/* Chess Board */}
-      <div className="flex-1 w-full max-w-sm sm:max-w-md lg:max-w-lg lg:mr-6">
-        <ChessBoard />
+    <div className="flex flex-col lg:flex-row h-screen bg-black-600 overflow-hidden">
+      {/* Left Side - Chessboard Area */}
+      <div className="flex-1 flex flex-col items-center justify-center p-2 lg:p-4 overflow-hidden bg-black-800">
+        {/* Chessboard Container - Maximize space */}
+        <div className="w-full h-full flex items-center justify-center">
+          <ChessBoard />
+        </div>
       </div>
 
-      {/* Controls + Game Report */}
-      <div className="flex flex-col flex-1 w-full max-w-md space-y-4">
-        <Controls />
-        <GameReport />
+      {/* Right Side - Game Report & Controls */}
+      <div className="w-full lg:w-[530px] lg:flex-shrink-0 bg-black-700 border-l border-black-500 flex flex-col h-full z-10">
+        {/* Game Report - Scrollable Area */}
+        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+          <GameReport />
+        </div>
+
+        {/* Controls - Fixed at Bottom of Right Panel */}
+        <div className="p-4 bg-black-700 border-t border-black-500">
+          <Controls />
+        </div>
       </div>
     </div>
   );
 };
-
 
 export default AnalyzeScreen;
