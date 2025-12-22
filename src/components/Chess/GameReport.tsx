@@ -15,10 +15,16 @@ interface Game {
 export interface AnalysisResult {
   accuracy: number;
   classifications: {
+    brilliant: number;
+    great: number;
+    best: number;
     excellent: number;
     good: number;
+    inaccuracy: number;
     mistake: number;
     blunder: number;
+    book: number;
+    forced: number;
   };
   positions: EvaluatedPosition[];
 }
@@ -26,9 +32,9 @@ export interface AnalysisResult {
 export interface EvaluatedPosition {
   fen: string;
   move: string;
-  classification: 'excellent' | 'good' | 'mistake' | 'blunder';
-  suggestedMove: string;
-  evaluation: number;
+  classification: 'brilliant' | 'great' | 'best' | 'excellent' | 'good' | 'inaccuracy' | 'mistake' | 'blunder' | 'book' | 'forced';
+  suggestedMove: { san: string; uci: string };
+  evaluation: { type: 'cp' | 'mate'; value: number };
 }
 
 const GameReport: React.FC = () => {

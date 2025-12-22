@@ -55,12 +55,34 @@ const squareImages = {
   dark: "/assets/board_pieces/square_brown_dark.png",
 };
 
+// Convert square notation to grid position (0-7 for both)
+const squareToPosition = (square: string): { col: number; row: number } => {
+  const col = cols.indexOf(square[0]);
+  const row = 8 - parseInt(square[1]);
+  return { col, row };
+};
+
+// Calculate arrow coordinates
+const getArrowCoordinates = (from: string, to: string, squareSize: number) => {
+  const fromPos = squareToPosition(from);
+  const toPos = squareToPosition(to);
+
+  // Center of each square
+  const x1 = (fromPos.col + 0.5) * squareSize;
+  const y1 = (fromPos.row + 0.5) * squareSize;
+  const x2 = (toPos.col + 0.5) * squareSize;
+  const y2 = (toPos.row + 0.5) * squareSize;
+
+  return { x1, y1, x2, y2 };
+};
+
 // Main ChessBoard Component
 const ChessBoard: React.FC = () => {
   const boardState = useGameStore((state) => state.boardState);
   const metadata = useGameStore((state) => state.metadata);
   const currentMoveIndex = useGameStore((state) => state.currentMoveIndex);
   const moves = useGameStore((state) => state.moves);
+  const analysisResult = useGameStore((state) => state.analysisResult);
 
   // Get player info from metadata or defaults
   const blackPlayer = {
@@ -76,6 +98,17 @@ const ChessBoard: React.FC = () => {
   const currentMove = currentMoveIndex >= 0 ? moves[currentMoveIndex] : null;
   const lastMove = currentMove?.move || null;
   const currentClassification = currentMove?.classification;
+  const suggestedMove = currentMove?.suggestedMove;
+
+  // Parse suggested move UCI to get from/to squares
+  const getSuggestedMoveSquares = () => {
+    if (!suggestedMove?.uci || suggestedMove.uci.length < 4) return null;
+    const from = suggestedMove.uci.substring(0, 2);
+    const to = suggestedMove.uci.substring(2, 4);
+    return { from, to };
+  };
+
+  const suggestedSquares = analysisResult ? getSuggestedMoveSquares() : null;
 
   return (
     <div className="flex items-start gap-4 mt-16 mb-16">
@@ -133,6 +166,66 @@ const ChessBoard: React.FC = () => {
                 </div>
               );
             })
+          )}
+
+          {/* Best Move Arrow Overlay */}
+          {suggestedSquares && (
+            <svg
+              className="absolute inset-0 w-full h-full pointer-events-none z-20"
+              viewBox="0 0 800 800"
+              preserveAspectRatio="none"
+            >
+              <defs>
+                <marker
+                  id="arrowhead"
+                  markerWidth="10"
+                  markerHeight="10"
+                  refX="8"
+                  refY="5"
+                  orient="auto"
+                >
+                  <path
+                    d="M0,0 L10,5 L0,10 L2,5 Z"
+                    fill="#22c55e"
+                  />
+                </marker>
+                <filter id="glow">
+                  <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+                  <feMerge>
+                    <feMergeNode in="coloredBlur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+              {(() => {
+                const coords = getArrowCoordinates(suggestedSquares.from, suggestedSquares.to, 100);
+
+                // Calculate shorter line for arrow (don't go all the way to center)
+                const dx = coords.x2 - coords.x1;
+                const dy = coords.y2 - coords.y1;
+                const length = Math.sqrt(dx * dx + dy * dy);
+                const shortenBy = 20;
+                const ratio = (length - shortenBy) / length;
+
+                const endX = coords.x1 + dx * ratio;
+                const endY = coords.y1 + dy * ratio;
+
+                return (
+                  <line
+                    x1={coords.x1}
+                    y1={coords.y1}
+                    x2={endX}
+                    y2={endY}
+                    stroke="#22c55e"
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                    markerEnd="url(#arrowhead)"
+                    filter="url(#glow)"
+                    opacity="0.9"
+                  />
+                );
+              })()}
+            </svg>
           )}
         </div>
 
