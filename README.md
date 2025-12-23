@@ -1,107 +1,111 @@
-# Proyecto: ChessMaster 🎯♟️  
+# Chessmaster 360 - Frontend
 
-**ChessMaster** es una aplicación web desarrollada con **React** y **TypeScript**, diseñada para ofrecer una interfaz moderna y responsiva para jugar y analizar partidas de ajedrez. Utilizamos **TailwindCSS** para los estilos y un enfoque modular basado en **React Components**.
+React-based frontend for the Chessmaster 360 chess analysis platform. Provides an interactive interface for analyzing chess games with engine-powered insights.
 
-🚀 **¡Ya puedes probar la aplicación en producción!**  
-👉 [ChessMaster360 en Producción](https://chessmaster360.netlify.app)
+## Production
 
----
+Deployed on Netlify: https://chessmaster360.netlify.app
 
-## 🎯 **¿Qué puedes hacer con ChessMaster?**  
-- Jugar partidas en un **tablero de ajedrez interactivo**.  
-- Analizar movimientos con soporte para archivos **PGN** (Portable Game Notation).  
-- Personalizar configuraciones de juego y recibir reportes detallados de las partidas.  
+## Features
 
-El diseño está optimizado para **dispositivos móviles** y **escritorios**, asegurando una experiencia responsiva en cualquier plataforma.
+- **Interactive Chessboard**: Visual board with piece highlighting and move indicators
+- **Game Analysis**: Deep analysis with move-by-move classification display
+- **Best Move Arrow**: Green SVG arrow showing the engine's suggested move
+- **Classification Icons**: Visual badges for each move quality (Brilliant, Best, Mistake, etc.)
+- **Evaluation Bar**: Real-time position evaluation display
+- **Chess.com Integration**: Import games directly from Chess.com by username
+- **Game Selector**: Browse and select games by month with result indicators
+- **Responsive Design**: Optimized for desktop and mobile devices
 
----
+## Tech Stack
 
-## Requisitos Previos ✅  
+- React 18 + TypeScript
+- Vite (build tool)
+- TailwindCSS (styling)
+- Zustand (state management)
+- chess.js (move validation)
+- react-icons
 
-Antes de comenzar con el desarrollo local, asegúrate de contar con lo siguiente:  
-- **Node.js** (v16 o superior).  
-  👉 [Descargar Node.js](https://nodejs.org/)  
-- **npm** o **yarn** (v7 o superior).  
-  - **npm** viene preinstalado con Node.js, pero también puedes instalar **yarn**.
-- **Git** para clonar el repositorio.  
-  👉 [Descargar Git](https://git-scm.com/)
+## Project Structure
 
----
-
-## 🔧 **Configuración del Proyecto**
-
-Sigue estos pasos para clonar el repositorio e iniciar el entorno de desarrollo:
-
-### 1️⃣ Clonar el Repositorio  
-Abre una terminal y ejecuta el siguiente comando:  
-```bash
-git clone https://github.com/usuario/chessmaster.git
+```
+src/
+├── components/
+│   ├── Chess/
+│   │   ├── ChessBoard.tsx      # Main board with arrow overlay
+│   │   ├── GameReport.tsx      # Analysis panel and controls
+│   │   ├── GameReviewSummary.tsx
+│   │   ├── GameModal.tsx       # Game selector with W/L indicators
+│   │   ├── EvaluationBar.tsx   # Position evaluation display
+│   │   └── Controls.tsx        # Navigation controls
+│   ├── Bars/
+│   │   └── Navbar.tsx
+│   └── Footer.tsx
+├── pages/
+│   └── AnalyzeScreen.tsx       # Main analysis page
+├── store/
+│   └── useGameStore.ts         # Zustand state management
+├── assets/
+│   └── Moves/                  # Classification icons
+└── App.tsx
 ```
 
-### 2️⃣ Navegar al Directorio del Proyecto  
-Accede al directorio clonado:  
-```bash
-cd chessmaster
-```
+## Installation
 
-### 3️⃣ Instalar Dependencias  
-Instala las dependencias necesarias utilizando **npm** o **yarn**:  
 ```bash
+# Install dependencies
 npm install
-```
 
-### 4️⃣ Configurar TailwindCSS  
-El proyecto ya incluye un archivo de configuración de **TailwindCSS** (`tailwind.config.js`) y de **PostCSS** (`postcss.config.js`). No necesitas realizar configuraciones adicionales, pero puedes personalizarlos si es necesario.
-
----
-
-## 🚀 **Ejecución del Proyecto**
-
-Una vez instaladas las dependencias, puedes iniciar el servidor de desarrollo local con:  
-```bash
+# Run development server
 npm run dev
+
+# Build for production
+npm run build
 ```
 
-Esto iniciará la aplicación en modo de desarrollo. Abre tu navegador y accede a:  
+## Configuration
+
+The frontend connects to the backend at `http://localhost:3001` by default. To change this, update the API calls in `GameReport.tsx`.
+
+## Usage
+
+1. Enter a Chess.com username
+2. Click the checkmark to load game archives
+3. Select a month and game from the modal
+4. Adjust analysis depth (15-20) as needed
+5. Click "Analyze" to start engine analysis
+6. Navigate through moves using arrow controls
+
+## Move Classifications
+
+| Icon | Classification | Meaning |
+|------|---------------|---------|
+| Star (cyan) | Brilliant | Perfect move with sacrifice |
+| Star (green) | Best | Engine's top recommendation |
+| Check (green) | Excellent | Near-perfect (<=10cp loss) |
+| Check (light) | Good | Minor inaccuracy (<=25cp) |
+| Book | Book | Opening theory move |
+| Warning (yellow) | Inaccuracy | Noticeable error (<=100cp) |
+| X (orange) | Mistake | Significant error (<=350cp) |
+| X (red) | Blunder | Critical error (>350cp) |
+
+## Development
+
+```bash
+# Type checking
+npm run typecheck
+
+# Linting
+npm run lint
+
+# Build and preview
+npm run build && npm run preview
 ```
-http://localhost:5173
-```
 
----
+## Production
 
-## 📂 **Estructura del Proyecto**  
+Deployed on Netlify: https://chessmaster360.netlify.app
 
-```plaintext
-├── public/                 # Archivos públicos (imágenes, íconos, etc.)
-├── src/                    # Código fuente principal
-│   ├── components/         # Componentes reutilizables
-│   │   ├── Bars/           # Componentes de la barra de navegación
-│   │   ├── Chess/          # Componentes relacionados con el ajedrez
-│   ├── styles/             # Archivos de estilos globales
-│   ├── App.tsx             # Componente principal de la aplicación
-│   └── main.tsx            # Punto de entrada del proyecto
-├── tailwind.config.js      # Configuración de TailwindCSS
-├── postcss.config.js       # Configuración de PostCSS
-├── package.json            # Información del proyecto
-├── README.md               # Este archivo
-└── dist/                   # Archivos generados para producción
-```
+## License
 
----
-
-## ✨ **Características Clave**
-- **Responsividad**: Funciona perfectamente en móviles y escritorios.  
-- **Tablero de ajedrez interactivo** (🚧 próximamente).  
-- **Carga y análisis de partidas**: Compatible con archivos PGN.  
-- **Estilos modernos**: Gracias a **TailwindCSS**.  
-
----
-
-## 🌐 **Enlace de Producción**  
-Accede a la aplicación en producción desde el siguiente enlace:  
-👉 [ChessMaster360 en Producción](https://chessmaster360.netlify.app)
-
----
-
-## 📜 **Licencia**  
-Este proyecto está bajo la licencia **MIT**. Puedes usarlo, modificarlo y distribuirlo libremente.
+MIT
