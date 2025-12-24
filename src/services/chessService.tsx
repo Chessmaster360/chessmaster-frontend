@@ -84,3 +84,22 @@ export const analyzeGame = async (pgn: string, depth: number) => {
     throw new Error('Could not analyze game.');
   }
 };
+
+/**
+ * Obtiene el perfil de un jugador de Chess.com.
+ * @param username - Nombre de usuario en Chess.com.
+ * @returns Datos del perfil incluyendo avatar.
+ */
+export const getPlayerProfile = async (username: string) => {
+  try {
+    const response = await axios.get(`https://api.chess.com/pub/player/${username}`);
+    return {
+      username: response.data.username,
+      avatar: response.data.avatar || null,
+      name: response.data.name || response.data.username,
+    };
+  } catch (error) {
+    console.error('Error fetching player profile:', error);
+    return { username, avatar: null, name: username };
+  }
+};
