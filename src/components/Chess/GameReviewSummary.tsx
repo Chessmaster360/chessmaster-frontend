@@ -56,6 +56,18 @@ const classificationNames: Record<Classification, string> = {
     forced: "Forced",
 };
 
+// Helper to parse game result
+const getResultDisplay = (result: string, whiteName: string, blackName: string) => {
+    if (result === "1-0") {
+        return { text: `${whiteName} wins`, icon: "🏆", whiteWon: true, blackWon: false, draw: false };
+    } else if (result === "0-1") {
+        return { text: `${blackName} wins`, icon: "🏆", whiteWon: false, blackWon: true, draw: false };
+    } else if (result === "1/2-1/2") {
+        return { text: "Draw", icon: "🤝", whiteWon: false, blackWon: false, draw: true };
+    }
+    return { text: "Unknown", icon: "❓", whiteWon: false, blackWon: false, draw: false };
+};
+
 interface GameReviewSummaryProps {
     onStartReview?: () => void;
 }
@@ -69,29 +81,64 @@ const GameReviewSummary: React.FC<GameReviewSummaryProps> = ({ onStartReview }) 
     }
 
     const { accuracies, classifications } = analysisResult;
+    const whiteName = metadata?.white || 'White';
+    const blackName = metadata?.black || 'Black';
+    const result = metadata?.result || '*';
+    const resultDisplay = getResultDisplay(result, whiteName, blackName);
 
     return (
         <div className="bg-black-600 rounded-lg p-4 text-white mt-4">
-            {/* Header */}
-            <div className="flex items-center gap-2 mb-4 border-b border-gray-700 pb-3">
-                <img src={classificationIcons.best} alt="Star" className="w-5 h-5" />
-                <h2 className="text-lg font-bold">Game Review</h2>
+            {/* Header with Result */}
+            <div className="flex items-center justify-between mb-4 border-b border-gray-700 pb-3">
+                <div className="flex items-center gap-2">
+                    <img src={classificationIcons.best} alt="Star" className="w-5 h-5" />
+                    <h2 className="text-lg font-bold">Game Review</h2>
+                </div>
+                {/* Game Result Badge */}
+                <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-semibold ${resultDisplay.draw
+                        ? 'bg-gray-600 text-gray-200'
+                        : resultDisplay.whiteWon
+                            ? 'bg-white/20 text-white'
+                            : 'bg-gray-800 text-gray-200'
+                    }`}>
+                    <span>{resultDisplay.icon}</span>
+                    <span>{resultDisplay.text}</span>
+                </div>
+            </div>
+
+            {/* Column Headers - White and Black */}
+            <div className="grid grid-cols-3 gap-2 mb-2">
+                <div></div>
+                <div className="text-center">
+                    <div className="flex items-center justify-center gap-2">
+                        <div className="w-4 h-4 rounded-full bg-white border border-gray-400"></div>
+                        <span className="text-xs text-gray-400 font-medium">WHITE</span>
+                    </div>
+                </div>
+                <div className="text-center">
+                    <div className="flex items-center justify-center gap-2">
+                        <div className="w-4 h-4 rounded-full bg-gray-800 border border-gray-600"></div>
+                        <span className="text-xs text-gray-400 font-medium">BLACK</span>
+                    </div>
+                </div>
             </div>
 
             {/* Players and Accuracy */}
             <div className="grid grid-cols-3 gap-2 mb-4">
                 <div className="text-left text-gray-400 text-sm">Accuracy</div>
                 <div className="text-center">
-                    <div className="text-xl font-bold text-green-400">
+                    <div className={`text-xl font-bold ${resultDisplay.whiteWon ? 'text-green-400' : 'text-white'}`}>
                         {accuracies.white.toFixed(1)}
                     </div>
-                    <div className="text-xs text-gray-400 truncate">{metadata?.white || 'White'}</div>
+                    <div className="text-xs text-gray-400 truncate">{whiteName}</div>
+                    {resultDisplay.whiteWon && <span className="text-xs text-green-400">Winner</span>}
                 </div>
                 <div className="text-center">
-                    <div className="text-xl font-bold text-gray-300">
+                    <div className={`text-xl font-bold ${resultDisplay.blackWon ? 'text-green-400' : 'text-gray-300'}`}>
                         {accuracies.black.toFixed(1)}
                     </div>
-                    <div className="text-xs text-gray-400 truncate">{metadata?.black || 'Black'}</div>
+                    <div className="text-xs text-gray-400 truncate">{blackName}</div>
+                    {resultDisplay.blackWon && <span className="text-xs text-green-400">Winner</span>}
                 </div>
             </div>
 

@@ -1,6 +1,10 @@
 import React from "react";
 import { useGameStore } from "../../store/useGameStore";
 
+interface EvaluationBarProps {
+  flipped?: boolean;
+}
+
 // Convert centipawn evaluation to percentage (clamped between 5% and 95%)
 const evaluationToPercent = (evaluation: number): number => {
   const maxEval = 500;
@@ -19,7 +23,7 @@ const formatEvaluation = (evaluation: number): string => {
 };
 
 // Evaluation Bar Component
-const EvaluationBar: React.FC = () => {
+const EvaluationBar: React.FC<EvaluationBarProps> = ({ flipped = false }) => {
   const currentEvaluation = useGameStore((state) => state.currentEvaluation);
   const isAnalyzing = useGameStore((state) => state.isAnalyzing);
   const moves = useGameStore((state) => state.moves);
@@ -27,6 +31,12 @@ const EvaluationBar: React.FC = () => {
   const hasAnalysis = moves.some(m => m.evaluation !== undefined);
   const whitePercent = hasAnalysis ? evaluationToPercent(currentEvaluation) : 50;
   const blackPercent = 100 - whitePercent;
+
+  // When flipped, swap the bar positions
+  const topPercent = flipped ? whitePercent : blackPercent;
+  const bottomPercent = flipped ? blackPercent : whitePercent;
+  const topColor = flipped ? "bg-gradient-to-b from-green-400 to-green-500" : "bg-gradient-to-b from-red-600 to-red-500";
+  const bottomColor = flipped ? "bg-gradient-to-b from-red-600 to-red-500" : "bg-gradient-to-b from-green-400 to-green-500";
 
   return (
     <div className="relative w-6 flex-shrink-0 self-stretch flex flex-col bg-gray-700">
@@ -37,16 +47,16 @@ const EvaluationBar: React.FC = () => {
         </div>
       )}
 
-      {/* Black Bar (top) */}
+      {/* Top Bar */}
       <div
-        className="w-full bg-gradient-to-b from-red-600 to-red-500 transition-all duration-300"
-        style={{ height: `${blackPercent}%` }}
+        className={`w-full ${topColor} transition-all duration-300`}
+        style={{ height: `${topPercent}%` }}
       />
 
-      {/* White Bar (bottom) */}
+      {/* Bottom Bar */}
       <div
-        className="w-full bg-gradient-to-b from-green-400 to-green-500 transition-all duration-300"
-        style={{ height: `${whitePercent}%` }}
+        className={`w-full ${bottomColor} transition-all duration-300`}
+        style={{ height: `${bottomPercent}%` }}
       />
 
       {/* Loading indicator */}

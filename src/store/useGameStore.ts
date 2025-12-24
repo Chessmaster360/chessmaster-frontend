@@ -82,6 +82,10 @@ interface GameState {
     currentEvaluation: number;
     analysisResult: AnalysisResult | null;
 
+    // Board orientation
+    boardFlipped: boolean;
+    searchedUsername: string;
+
     // Actions
     loadPGN: (pgn: string) => boolean;
     goToMove: (index: number) => void;
@@ -93,6 +97,8 @@ interface GameState {
     setAnalysis: (moveIndex: number, evaluation: number, bestMove?: string) => void;
     setIsAnalyzing: (analyzing: boolean) => void;
     setAnalysisResult: (result: AnalysisResult) => void;
+    setSearchedUsername: (username: string) => void;
+    setBoardFlipped: (flipped: boolean) => void;
 }
 
 // Helper to convert chess.js board to our BoardState format
@@ -140,6 +146,8 @@ export const useGameStore = create<GameState>((set, get) => ({
     isAnalyzing: false,
     currentEvaluation: 0,
     analysisResult: null,
+    boardFlipped: false,
+    searchedUsername: '',
 
     // Load a PGN and parse all moves
     loadPGN: (pgn: string) => {
@@ -295,5 +303,15 @@ export const useGameStore = create<GameState>((set, get) => ({
             analysisResult: result,
             isAnalyzing: false,
         });
+    },
+
+    // Set searched username and determine board orientation
+    setSearchedUsername: (username: string) => {
+        set({ searchedUsername: username.toLowerCase() });
+    },
+
+    // Set board flipped state
+    setBoardFlipped: (flipped: boolean) => {
+        set({ boardFlipped: flipped });
     },
 }));

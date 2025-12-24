@@ -29,8 +29,11 @@ const classificationIcons: Record<string, string> = {
   blunder: BlunderIcon,
 };
 
-const rows = [8, 7, 6, 5, 4, 3, 2, 1];
-const cols = ["a", "b", "c", "d", "e", "f", "g", "h"];
+// Board orientation arrays
+const rowsWhite = [8, 7, 6, 5, 4, 3, 2, 1];
+const rowsBlack = [1, 2, 3, 4, 5, 6, 7, 8];
+const colsWhite = ["a", "b", "c", "d", "e", "f", "g", "h"];
+const colsBlack = ["h", "g", "f", "e", "d", "c", "b", "a"];
 
 // Map chess.js piece notation to image paths
 const getPieceImage = (piece: ChessPiece | null): string | null => {
@@ -56,33 +59,37 @@ const squareImages = {
 };
 
 // Convert square notation to grid position (0-7 for both)
-const squareToPosition = (square: string): { col: number; row: number } => {
+const squareToPosition = (square: string, flipped: boolean): { col: number; row: number } => {
+  const cols = flipped ? colsBlack : colsWhite;
   const col = cols.indexOf(square[0]);
-  const row = 8 - parseInt(square[1]);
-  return { col, row };
+  const row = parseInt(square[1]) - 1;
+  return { col, row: flipped ? row : 7 - row };
 };
 
 // Calculate arrow coordinates
-const getArrowCoordinates = (from: string, to: string, squareSize: number) => {
-  const fromPos = squareToPosition(from);
-  const toPos = squareToPosition(to);
+const getArrowCoordinates = (from: string, to: string, squareSize: number, flipped: boolean) => {
+  const fromPos = squareToPosition(from, flipped);
+  const toPos = squareToPosition(to, flipped);
 
-  // Center of each square
-  const x1 = (fromPos.col + 0.5) * squareSize;
-  const y1 = (fromPos.row + 0.5) * squareSize;
-  const x2 = (toPos.col + 0.5) * squareSize;
-  const y2 = (toPos.row + 0.5) * squareSize;
-
-  return { x1, y1, x2, y2 };
+  return {
+    x1: fromPos.col * squareSize + squareSize / 2,
+    y1: fromPos.row * squareSize + squareSize / 2,
+    x2: toPos.col * squareSize + squareSize / 2,
+    y2: toPos.row * squareSize + squareSize / 2,
+  };
 };
 
-// Main ChessBoard Component
 const ChessBoard: React.FC = () => {
   const boardState = useGameStore((state) => state.boardState);
   const metadata = useGameStore((state) => state.metadata);
   const currentMoveIndex = useGameStore((state) => state.currentMoveIndex);
   const moves = useGameStore((state) => state.moves);
   const analysisResult = useGameStore((state) => state.analysisResult);
+  const boardFlipped = useGameStore((state) => state.boardFlipped);
+
+  // Board orientation based on flipped state
+  const rows = boardFlipped ? rowsBlack : rowsWhite;
+  const cols = boardFlipped ? colsBlack : colsWhite;
 
   // Get player info from metadata or defaults
   const blackPlayer = {
@@ -93,6 +100,12 @@ const ChessBoard: React.FC = () => {
     name: metadata?.white || "White Pieces",
     elo: metadata?.whiteElo || 0,
   };
+
+  // Determine which player is on top/bottom based on board orientation
+  const topPlayer = boardFlipped ? whitePlayer : blackPlayer;
+  const bottomPlayer = boardFlipped ? blackPlayer : whitePlayer;
+  const topPlayerColor = boardFlipped ? 'white' : 'black';
+  const bottomPlayerColor = boardFlipped ? 'black' : 'white';
 
   // Get the last move for highlighting and classification
   const currentMove = currentMoveIndex >= 0 ? moves[currentMoveIndex] : null;
@@ -112,20 +125,25 @@ const ChessBoard: React.FC = () => {
 
   return (
     <div className="flex items-start gap-4 mt-16 mb-16">
-      {/* Evaluation Bar */}
-      <EvaluationBar />
+      {/* Evaluation Bar - flip if board is flipped */}
+      <EvaluationBar flipped={boardFlipped} />
 
       {/* Chessboard with Player Info */}
       <div className="relative w-full max-w-[580px]">
         {/* Top Player Info */}
-        <PlayerInfo name={blackPlayer.name} elo={blackPlayer.elo} position="top" />
+        <PlayerInfo
+          name={topPlayer.name}
+          elo={topPlayer.elo}
+          position="top"
+          color={topPlayerColor}
+        />
 
         {/* Chessboard - Square aspect ratio */}
         <div className="grid grid-cols-8 aspect-square w-full sm:w-[580px] sm:h-[580px] border border-black-200 relative">
           {rows.map((row) =>
             cols.map((col) => {
               const square = `${col}${row}`;
-              const colIndex = cols.indexOf(col);
+              const colIndex = colsWhite.indexOf(col); // Use original index for color calculation
               const isDark = (row + colIndex) % 2 !== 0;
               const piece = boardState[square];
               const pieceImage = getPieceImage(piece);
@@ -198,7 +216,7 @@ const ChessBoard: React.FC = () => {
                 </filter>
               </defs>
               {(() => {
-                const coords = getArrowCoordinates(suggestedSquares.from, suggestedSquares.to, 100);
+                const coords = getArrowCoordinates(suggestedSquares.from, suggestedSquares.to, 100, boardFlipped);
 
                 // Calculate shorter line for arrow (don't go all the way to center)
                 const dx = coords.x2 - coords.x1;
@@ -230,7 +248,12 @@ const ChessBoard: React.FC = () => {
         </div>
 
         {/* Bottom Player Info */}
-        <PlayerInfo name={whitePlayer.name} elo={whitePlayer.elo} position="bottom" />
+        <PlayerInfo
+          name={bottomPlayer.name}
+          elo={bottomPlayer.elo}
+          position="bottom"
+          color={bottomPlayerColor}
+        />
       </div>
     </div>
   );

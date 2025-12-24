@@ -64,6 +64,9 @@ const GameReport: React.FC = () => {
   const currentMoveIndex = useGameStore((state) => state.currentMoveIndex);
   const moves = useGameStore((state) => state.moves);
   const metadata = useGameStore((state) => state.metadata);
+  const setSearchedUsername = useGameStore((state) => state.setSearchedUsername);
+  const setBoardFlipped = useGameStore((state) => state.setBoardFlipped);
+  const searchedUsername = useGameStore((state) => state.searchedUsername);
 
   // Get current move's suggested move
   const currentMove = currentMoveIndex >= 0 ? moves[currentMoveIndex] : null;
@@ -168,6 +171,8 @@ const GameReport: React.FC = () => {
     try {
       const playerArchives = await getPlayerArchives(inputValue.trim());
       setArchives(playerArchives);
+      // Save the searched username
+      setSearchedUsername(inputValue.trim());
 
       if (playerArchives.length > 0) {
         setShowGames(true);
@@ -185,7 +190,7 @@ const GameReport: React.FC = () => {
     } finally {
       setIsLoading(false); // Finaliza la carga
     }
-  }, [inputValue, option]);
+  }, [inputValue, option, setSearchedUsername]);
 
   const handleGameSelect = useCallback((pgn: string) => {
     // Store PGN internally instead of in input field
@@ -193,8 +198,24 @@ const GameReport: React.FC = () => {
     setGameSelected(true);
     setShowGames(false);
     // Load PGN into game store for visualization
-    loadPGN(pgn);
-  }, [loadPGN]);
+    const loaded = loadPGN(pgn);
+
+    // After loading, check if searched user plays black and flip board accordingly
+    if (loaded) {
+      // We need to check after the PGN is loaded to get metadata
+      // The metadata will be set by loadPGN, so we check in a timeout
+      setTimeout(() => {
+        const state = useGameStore.getState();
+        const meta = state.metadata;
+        const username = state.searchedUsername;
+        if (meta && username) {
+          // Check if searched user is playing black
+          const isBlack = meta.black.toLowerCase() === username.toLowerCase();
+          setBoardFlipped(isBlack);
+        }
+      }, 0);
+    }
+  }, [loadPGN, setBoardFlipped]);
 
   const handleMonthSelect = useCallback(async (month: string) => {
     const [year, monthNumber] = month.split("-");
@@ -208,23 +229,11 @@ const GameReport: React.FC = () => {
 
   return (
     <div className="bg-black-600 text-white p-4 rounded shadow-md border border-black-600 w-full h-full flex flex-col">
-      {/* Header with "?" and copy buttons */}
+      {/* Header with "?" button */}
       <header className="relative flex items-center mb-6 flex-col lg:flex-row lg:space-x-3 text-center lg:text-left">
         <FaChessKnight className="text-3xl text-green-600 mb-2 lg:mb-0" />
         <h2 className="text-2xl font-semibold">Game Report</h2>
         <div className="absolute top-2 right-2 flex gap-2">
-          {/* Copy PGN button - show when game is selected or PGN entered */}
-          {(selectedPgn || (option === "pgn" && inputValue.trim())) && (
-            <button
-              onClick={handleCopyPgn}
-              className={`text-white rounded-full w-6 h-6 flex items-center justify-center transition-colors ${copiedPgn ? "bg-green-500" : "bg-gray-600 hover:bg-gray-500"
-                }`}
-              aria-label="Copy PGN"
-              title="Copy PGN"
-            >
-              {copiedPgn ? <FaCheck className="text-xs" /> : <FaCopy className="text-xs" />}
-            </button>
-          )}
           <button
             onClick={() => setShowInstructionsModal(true)}
             className="bg-gray-600 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-gray-500"
@@ -316,27 +325,36 @@ const GameReport: React.FC = () => {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-3">
+          <div className="flex flex-col gap-3">
+            <div className="flex gap-3">
+              <button
+                onClick={handleAnalyze}
+                className="flex-1 bg-green-600 px-4 py-3 rounded-lg hover:bg-green-700 flex items-center justify-center space-x-2 font-medium"
+                disabled={isAnalyzingLocal}
+              >
+                {isAnalyzingLocal ? (
+                  <FaSpinner className="animate-spin" />
+                ) : (
+                  <>
+                    <FaArrowRight aria-hidden="true" />
+                    <span>Analyze Now</span>
+                  </>
+                )}
+              </button>
+              <button
+                onClick={handleSearchAnother}
+                className="px-4 py-3 rounded-lg bg-gray-600 hover:bg-gray-500 flex items-center justify-center space-x-2"
+              >
+                <FaSearch />
+                <span>Search Another</span>
+              </button>
+            </div>
             <button
-              onClick={handleAnalyze}
-              className="flex-1 bg-green-600 px-4 py-3 rounded-lg hover:bg-green-700 flex items-center justify-center space-x-2 font-medium"
-              disabled={isAnalyzingLocal}
+              onClick={() => setShowGames(true)}
+              className="w-full px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 flex items-center justify-center space-x-2 text-sm"
             >
-              {isAnalyzingLocal ? (
-                <FaSpinner className="animate-spin" />
-              ) : (
-                <>
-                  <FaArrowRight aria-hidden="true" />
-                  <span>Analyze Now</span>
-                </>
-              )}
-            </button>
-            <button
-              onClick={handleSearchAnother}
-              className="px-4 py-3 rounded-lg bg-gray-600 hover:bg-gray-500 flex items-center justify-center space-x-2"
-            >
-              <FaSearch />
-              <span>Search Another</span>
+              <span>🎮</span>
+              <span>Choose Different Game</span>
             </button>
           </div>
         </div>
