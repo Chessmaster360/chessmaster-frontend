@@ -150,7 +150,7 @@ const GameReport: React.FC = () => {
         setGames([]);
       }
     } catch (error) {
-      setWarning("Error fetching games. Please try again.");
+      setWarning("User not found or no games available. Please check the username and try again.");
       setArchives([]);
       setGames([]);
       setShowGames(false);
@@ -172,7 +172,7 @@ const GameReport: React.FC = () => {
       const gamesForMonth = await getGamesFromMonth(inputValue.trim(), parseInt(year), parseInt(monthNumber));
       setGames(gamesForMonth);
     } catch {
-      setWarning("Error fetching games for selected month.");
+      setWarning("Could not load games for this month. Please try again.");
     }
   }, [inputValue]);
 
@@ -193,18 +193,52 @@ const GameReport: React.FC = () => {
 
       {/* Instructions Modal */}
       {showInstructionsModal && (
-        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-75 flex items-center justify-center z-50">
-          <div className="bg-black-600 text-white p-6 rounded w-11/12 max-w-[500px] relative">
-            <button
-              onClick={() => setShowInstructionsModal(false)}
-              className="absolute top-2 right-2 text-white hover:text-gray-300 text-xl"
-            >
-              ×
-            </button>
-            <p className="text-sm">
-              Enter a PGN game format to analyze manually, or find the PGN format
-              of a game played by any user by entering the USERNAME of the chess.com platform 👨‍💻⚡.
-            </p>
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-black-700 text-white rounded-xl w-full max-w-md shadow-2xl border border-green-600/50 overflow-hidden animate-fade-in">
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-green-600 to-green-700 px-6 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <FaChessKnight className="text-2xl text-white" />
+                <h3 className="text-lg font-semibold text-white">How to Use</h3>
+              </div>
+              <button
+                onClick={() => setShowInstructionsModal(false)}
+                className="text-white/80 hover:text-white text-xl transition-colors"
+                aria-label="Close modal"
+              >
+                ✕
+              </button>
+            </div>
+            {/* Modal Body */}
+            <div className="p-6 space-y-4 bg-black-600">
+              <div className="flex items-start gap-3">
+                <span className="text-green-400 font-bold">1.</span>
+                <p className="text-gray-300 text-sm">
+                  <strong className="text-white">Enter a PGN:</strong> Paste your game in PGN format to analyze it directly.
+                </p>
+              </div>
+              <div className="flex items-start gap-3">
+                <span className="text-green-400 font-bold">2.</span>
+                <p className="text-gray-300 text-sm">
+                  <strong className="text-white">Search by Username:</strong> Enter a Chess.com username to find and import their games.
+                </p>
+              </div>
+              <div className="flex items-start gap-3">
+                <span className="text-green-400 font-bold">3.</span>
+                <p className="text-gray-300 text-sm">
+                  <strong className="text-white">Click Analyze:</strong> Our engine will evaluate every move and provide insights.
+                </p>
+              </div>
+            </div>
+            {/* Modal Footer */}
+            <div className="px-6 py-4 bg-black-600 border-t border-gray-700">
+              <button
+                onClick={() => setShowInstructionsModal(false)}
+                className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-medium transition-colors"
+              >
+                Got it!
+              </button>
+            </div>
           </div>
         </div>
       )}

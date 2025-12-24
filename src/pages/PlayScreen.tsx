@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import ChessBoard from '../components/Chess/ChessBoard';
+import Controls from '../components/Chess/Controls';
+import { FaRobot, FaChessKnight } from 'react-icons/fa';
 
 interface Bot {
   name: string;
@@ -37,35 +39,40 @@ const bots: Bot[] = [
 
 const PlayScreen: React.FC = () => {
   const [selectedBot, setSelectedBot] = useState<Bot | null>(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [showComingSoonModal, setShowComingSoonModal] = useState(true); // New state
-
-  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+  const [showComingSoonModal, setShowComingSoonModal] = useState(true);
 
   return (
-    <div className="h-screen flex text-gray-200">
-
+    <div className="flex flex-col lg:flex-row h-screen bg-black-600 overflow-hidden">
       {/* Coming Soon Modal */}
       {showComingSoonModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-          <div className="bg-black-600 p-6 rounded max-w-md mx-4 relative">
-            <button
-              onClick={() => setShowComingSoonModal(false)}
-              className="absolute top-2 right-2 text-white hover:text-gray-300 text-2xl"
-            >
-              ×
-            </button>
-            <h2 className="text-2xl font-bold mb-4 text-center text-purple-400">
-              ⚙️ Coming Soon!
-            </h2>
-            <p className="text-center text-gray-300">
-              We're working hard to bring you the bot battle functionality!
-              Stay tuned for updates. 🚀
-            </p>
-            <div className="mt-4 flex justify-center">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-black-600 rounded-xl shadow-2xl w-full max-w-md border border-green-600/30 overflow-hidden animate-fade-in">
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-green-600 to-green-700 px-6 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <FaRobot className="text-2xl text-white" />
+                <h3 className="text-lg font-semibold text-white">Coming Soon!</h3>
+              </div>
               <button
                 onClick={() => setShowComingSoonModal(false)}
-                className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-2 rounded"
+                className="text-white/80 hover:text-white text-xl transition-colors"
+                aria-label="Close modal"
+              >
+                ✕
+              </button>
+            </div>
+            {/* Modal Body */}
+            <div className="p-6 bg-black-600">
+              <p className="text-gray-300 text-center">
+                We're working hard to bring you the bot battle functionality!
+                Stay tuned for updates. 🚀
+              </p>
+            </div>
+            {/* Modal Footer */}
+            <div className="px-6 py-4 bg-black-700 border-t border-gray-700">
+              <button
+                onClick={() => setShowComingSoonModal(false)}
+                className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-medium transition-colors"
               >
                 Got it!
               </button>
@@ -74,51 +81,77 @@ const PlayScreen: React.FC = () => {
         </div>
       )}
 
-      {/* Contenedor central */}
-      <div className="container mx-auto flex flex-col md:flex-row items-center justify-center rounded-lg shadow-lg p-4 md:gap-2 max-w-4xl">
-        {/* Tablero de Ajedrez */}
-        <div className="flex-1 w-full max-w-sm sm:max-w-md lg:max-w-lg lg:mr-6">
+      {/* Left Side - Chessboard Area */}
+      <div className="flex-1 flex flex-col items-center justify-center p-2 lg:p-4 overflow-hidden bg-black-800">
+        {/* Chessboard Container - Maximize space */}
+        <div className="w-full h-full flex items-center justify-center">
           <ChessBoard />
         </div>
+      </div>
 
-        {/* Botón para abrir/ocultar la barra en pantallas pequeñas */}
-        <button
-          className="absolute top-20 right-4 z-50 bg-purple-500 text-white p-2 rounded-full md:hidden"
-          onClick={toggleSidebar}
-        >
-          {isSidebarOpen ? 'Close' : 'Open'}
-        </button>
+      {/* Right Side - Bot Selection & Controls */}
+      <div className="w-full lg:w-[530px] lg:flex-shrink-0 bg-black-700 border-l border-black-500 flex flex-col h-full z-10">
+        {/* Bot Selection - Scrollable Area */}
+        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+          <div className="bg-black-600 text-white p-4 rounded shadow-md border border-black-600 w-full h-full flex flex-col">
+            {/* Header */}
+            <header className="relative flex items-center mb-6 flex-col lg:flex-row lg:space-x-3 text-center lg:text-left">
+              <FaChessKnight className="text-3xl text-green-600 mb-2 lg:mb-0" />
+              <h2 className="text-2xl font-semibold">Play Against Bots</h2>
+            </header>
 
-        {/* Sección de Bots */}
-        <div
-          className={`fixed inset-y-0 right-0 transform ${
-            isSidebarOpen ? 'translate-x-0' : 'translate-x-full'
-          } transition-transform duration-300 md:relative md:translate-x-0 w-80 bg-black-600 p-6 rounded shadow-lg flex flex-col`}
-        >
-          <h2 className="text-2xl font-bold mb-4">Play Against Bots</h2>
-          <ul className="space-y-4">
-            {bots.map((bot) => (
-              <li
-                key={bot.name}
-                className="p-4 bg-black-200 rounded cursor-pointer hover:bg-gray-500"
-                onClick={() => setSelectedBot(bot)}
-              >
-                {bot.name}
-              </li>
-            ))}
-          </ul>
-          {selectedBot && (
-            <div className="mt-6 p-4 bg-black-200 rounded-lg">
-              <img
-                src={selectedBot.image}
-                alt={selectedBot.name}
-                className="w-full h-32 object-cover rounded-lg mb-4"
-              />
-              <h3 className="text-xl font-bold">{selectedBot.name}</h3>
-              <p className="text-gray-400">Elo: {selectedBot.elo}</p>
-              <p className="mt-2 text-gray-300">{selectedBot.description}</p>
+            {/* Bot List */}
+            <div className="space-y-3 flex-1">
+              {bots.map((bot) => (
+                <div
+                  key={bot.name}
+                  className={`p-4 bg-black-200 rounded-lg cursor-pointer transition-all hover:bg-gray-600 border-2 ${selectedBot?.name === bot.name
+                      ? 'border-green-500 bg-gray-600'
+                      : 'border-transparent'
+                    }`}
+                  onClick={() => setSelectedBot(bot)}
+                >
+                  <div className="flex items-center gap-4">
+                    <img
+                      src={bot.image}
+                      alt={bot.name}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                    <div>
+                      <h3 className="font-semibold text-white">{bot.name}</h3>
+                      <p className="text-sm text-gray-400">Elo: {bot.elo}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-          )}
+
+            {/* Selected Bot Details */}
+            {selectedBot && (
+              <div className="mt-4 p-4 bg-black-200 rounded-lg border border-green-600/30">
+                <div className="flex items-center gap-4 mb-3">
+                  <img
+                    src={selectedBot.image}
+                    alt={selectedBot.name}
+                    className="w-16 h-16 rounded-full object-cover border-2 border-green-500"
+                  />
+                  <div>
+                    <h3 className="text-xl font-bold text-white">{selectedBot.name}</h3>
+                    <p className="text-green-400">Elo: {selectedBot.elo}</p>
+                  </div>
+                </div>
+                <p className="text-gray-300 text-sm mb-4">{selectedBot.description}</p>
+                <button className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-medium transition-colors">
+                  Start Game vs {selectedBot.name}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Controls - Fixed at Bottom of Right Panel */}
+        <div className="p-4 bg-black-700 border-t border-black-500">
+          <Controls />
         </div>
       </div>
     </div>
