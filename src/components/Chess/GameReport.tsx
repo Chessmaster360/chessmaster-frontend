@@ -66,7 +66,6 @@ const GameReport: React.FC = () => {
   const metadata = useGameStore((state) => state.metadata);
   const setSearchedUsername = useGameStore((state) => state.setSearchedUsername);
   const setBoardFlipped = useGameStore((state) => state.setBoardFlipped);
-  const searchedUsername = useGameStore((state) => state.searchedUsername);
 
   // Get current move's suggested move
   const currentMove = currentMoveIndex >= 0 ? moves[currentMoveIndex] : null;
