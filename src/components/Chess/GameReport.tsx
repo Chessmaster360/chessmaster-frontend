@@ -454,13 +454,13 @@ const GameReport: React.FC = () => {
       {analysisResult && <GameReviewSummary />}
 
       {/* Best Move Suggestion */}
-      {analysisResult && suggestedMove && suggestedMove.san && (
+      {analysisResult && suggestedMove && (suggestedMove.san || suggestedMove.uci) && (
         <div className="bg-black-200 p-4 rounded mb-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <span className="text-green-400 font-bold">Best Move:</span>
               <span className="bg-green-600 px-3 py-1 rounded font-mono text-lg">
-                {suggestedMove.san}
+                {suggestedMove.san || suggestedMove.uci}
               </span>
             </div>
             <span className="text-xs text-gray-400">

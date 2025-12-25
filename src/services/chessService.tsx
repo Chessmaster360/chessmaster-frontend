@@ -3,7 +3,7 @@ import axios from 'axios';
 // Obtén la URL base desde las variables de entorno
 // En producción usa la URL de producción, en desarrollo usa localhost
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ||
-  (import.meta.env.PROD ? 'https://your-production-api.com' : 'http://localhost:3000');
+  (import.meta.env.PROD ? 'https://chessmaster-backend-nestjs.onrender.com' : 'http://localhost:3000');
 
 // Solo mostrar advertencia si no está configurada la variable de entorno
 if (!import.meta.env.VITE_API_BASE_URL) {
