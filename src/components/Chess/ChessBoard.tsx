@@ -124,7 +124,7 @@ const ChessBoard: React.FC = () => {
   const suggestedSquares = analysisResult ? getSuggestedMoveSquares() : null;
 
   return (
-    <div className="flex items-start gap-2 sm:gap-4 mt-4 mb-4 w-full justify-center">
+    <div className="flex items-start w-full justify-center gap-2">
       {/* Evaluation Bar - flip if board is flipped */}
       <EvaluationBar flipped={boardFlipped} />
 

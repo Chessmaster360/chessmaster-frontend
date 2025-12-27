@@ -39,7 +39,7 @@ const EvaluationBar: React.FC<EvaluationBarProps> = ({ flipped = false }) => {
   const bottomColor = flipped ? "bg-gradient-to-b from-red-600 to-red-500" : "bg-gradient-to-b from-green-400 to-green-500";
 
   return (
-    <div className="relative w-4 sm:w-6 flex-shrink-0 self-stretch flex flex-col bg-gray-700 rounded-sm overflow-hidden">
+    <div className="relative w-4 sm:w-6 flex-shrink-0 self-stretch flex flex-col bg-gray-700 rounded-sm overflow-hidden ">
       {/* Evaluation display */}
       {hasAnalysis && (
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 bg-black bg-opacity-80 px-1 py-0.5 rounded text-xs font-mono text-white whitespace-nowrap">
