@@ -50,7 +50,7 @@ const Controls: React.FC = () => {
 
   // Button style helper
   const getButtonClass = (enabled: boolean) => `
-    ${enabled ? 'bg-black-200 hover:bg-gray-600' : 'bg-gray-700 cursor-not-allowed opacity-50'}
+    ${enabled ? 'bg-black-200 hover:bg-gray-600 active:scale-95' : 'bg-gray-700 cursor-not-allowed opacity-50'}
     text-white p-2 sm:p-3 rounded-full transition-all
   `;
 
