@@ -14,8 +14,8 @@ const PlayerInfo: React.FC<PlayerInfoProps> = ({ name, elo, position, avatarUrl,
   return (
     <div
       className={`w-full px-4 py-2 rounded-lg text-white font-semibold shadow-md border ${isBlack
-          ? 'bg-gray-900 border-gray-700'
-          : 'bg-gray-700 border-gray-500'
+        ? 'bg-gray-900 border-gray-700'
+        : 'bg-gray-700 border-gray-500'
         } ${position === "top" ? "rounded-t-lg" : "rounded-b-lg"}`}
     >
       <div className="flex items-center justify-between">
